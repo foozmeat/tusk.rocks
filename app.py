@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from mastodon import MastodonIllegalArgumentError, MastodonUnauthorizedError
 from sqlalchemy import exc
 
-from sr.forms import MastodonIDForm
+from sr.forms import MastodonIDForm, SubmissionForm
 from sr.helpers import get_or_create_host, mastodon_api
 from sr.models import Settings, User, metadata
 
@@ -64,9 +64,11 @@ def index():
         return render_template('maintenance.html.j2')
 
     mform = MastodonIDForm()
+    sform = SubmissionForm()
 
     return render_template('index.html.j2',
                            mform=mform,
+                           sform=sform,
                            )
 
 
@@ -173,7 +175,7 @@ def mastodon_oauthorized():
 
                 body = render_template('new_user_email.txt.j2',
                                        user=user)
-                msg = Message(subject="New song.delivery user",
+                msg = Message(subject=f"New {app.config.get('SITE_NAME', None)} user",
                               body=body,
                               recipients=[app.config.get('MAIL_TO', None)])
 

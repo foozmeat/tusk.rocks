@@ -1,4 +1,5 @@
 class DefaultConfig(object):
+    SITE_NAME = "my.site"
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True

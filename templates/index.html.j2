@@ -7,6 +7,10 @@
             <input type="submit" value="Delete">
         </form>
 
+        <br>
+        {{ sform.comment.label }}:{{ sform.comment(size=500) }}
+
+
     {% else %}
         <form action="{{ url_for('mastodon_login') }}" method="POST">
             {{ mform.mastodon_id.label }}:{{ mform.mastodon_id(placeholder='yourid@mastodon.instance', size=30) }}

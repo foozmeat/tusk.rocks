@@ -14,7 +14,7 @@ def get_or_create_host(db, app, hostname):
                     "SonicReducer",
                     scopes=["read", "write"],
                     api_base_url=f"https://{hostname}",
-                    website="https://song.delivery/",
+                    website=f"https://{app.config.get('SITE_NAME', None)}/",
                     redirect_uris=url_for("mastodon_oauthorized", _external=True)
             )
 
