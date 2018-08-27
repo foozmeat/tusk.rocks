@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, RadioField, StringField, TextAreaField
 from wtforms.fields.html5 import URLField
-from wtforms.validators import DataRequired, Email, Length, optional, length
+from wtforms.validators import DataRequired, Email, Length, optional, length, url
 
 
 class MastodonIDForm(FlaskForm):
@@ -10,4 +10,4 @@ class MastodonIDForm(FlaskForm):
 
 class SubmissionForm(FlaskForm):
     comment = TextAreaField('Comment', [length(max=500)])
-    song_link = URLField('Link: ')
+    share_link = URLField('Link: ', [url()])

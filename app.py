@@ -11,7 +11,7 @@ from sqlalchemy import exc
 
 from tr.forms import MastodonIDForm, SubmissionForm
 from tr.helpers import get_or_create_host, mastodon_api
-from tr.models import Settings, User, metadata
+from tr.models import Settings, User, metadata, Post
 
 app = Flask(__name__)
 
@@ -28,7 +28,7 @@ logHandler.setLevel(logging.INFO)
 app.logger.addHandler(logHandler)
 app.logger.info("Starting up...")
 
-config = os.environ.get('SR_CONFIG', 'config.DevelopmentConfig')
+config = os.environ.get('TR_CONFIG', 'config.DevelopmentConfig')
 app.config.from_object(config)
 mail = Mail(app)
 
@@ -71,6 +71,32 @@ def index():
                            sform=sform,
                            app=app
                            )
+
+
+@app.route('/make_post', methods=["POST"])
+def make_post():
+    form = SubmissionForm()
+    if form.validate_on_submit():
+
+        user = db.session.query(User).filter_by(
+                mastodon_user=session['mastodon']['username']
+        ).first()
+
+        post = Post()
+        form.populate_obj(post)
+        post.user_id = user.id
+        db.session.add(post)
+        db.session.commit()
+
+
+        flash(f"Post created")
+
+    else:
+        for e in form.errors.items():
+            flash(e[1][0])
+        return redirect(url_for('index'))
+
+    return redirect(url_for('index'))
 
 
 @app.route('/mastodon_login', methods=['POST'])

@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, MetaData, String
@@ -43,10 +44,25 @@ class Post(Base):
     comment = Column(String(500), nullable=False)
     share_link = Column(String(400), nullable=False)
     posted = Column(Boolean, nullable=False, default=False)
-    post_link = Column(String(400), nullable=False)
+    post_link = Column(String(400), nullable=True)
 
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime)
+
+    @property
+    def share_link_is_song_link(self):
+        pattern = re.compile("^https://song.link/")
+        if pattern.search(self.share_link):
+            return True
+        else:
+            return False
+
+    @property
+    def song_link(self):
+        if self.share_link_is_song_link:
+            return self.share_link
+        else:
+            return f"https://song.link/{self.share_link}"
 
 
 class User(Base):
@@ -61,7 +77,7 @@ class User(Base):
     mastodon_host_id = Column(Integer, ForeignKey('mastodon_host.id'), nullable=False)
 
     settings_id = Column(Integer, ForeignKey('settings.id'), nullable=True)
-    posts = relationship("Post")
+    posts = relationship("Post", backref="user")
 
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime)

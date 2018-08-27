@@ -8,9 +8,13 @@
         </form>
 
         <br>
-        {{ sform.comment.label }}:{{ sform.comment(size=500) }}
 
-
+        <form method="POST" action="{{ url_for('make_post') }}">
+            {{ sform.comment.label }}:{{ sform.comment(size=500) }}<br>
+            {{ sform.share_link.label }}:{{ sform.share_link(size=50) }}
+            {{ sform.csrf_token }}
+            <input type="submit" value="Save">
+        </form>
     {% else %}
         <form action="{{ url_for('mastodon_login') }}" method="POST">
             {{ mform.mastodon_id.label }}:{{ mform.mastodon_id(placeholder='yourid@mastodon.instance', size=30) }}
