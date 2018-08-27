@@ -9,9 +9,9 @@ from flask_sqlalchemy import SQLAlchemy
 from mastodon import MastodonIllegalArgumentError, MastodonUnauthorizedError
 from sqlalchemy import exc
 
-from sr.forms import MastodonIDForm, SubmissionForm
-from sr.helpers import get_or_create_host, mastodon_api
-from sr.models import Settings, User, metadata
+from tr.forms import MastodonIDForm, SubmissionForm
+from tr.helpers import get_or_create_host, mastodon_api
+from tr.models import Settings, User, metadata
 
 app = Flask(__name__)
 
@@ -69,6 +69,7 @@ def index():
     return render_template('index.html.j2',
                            mform=mform,
                            sform=sform,
+                           app=app
                            )
 
 

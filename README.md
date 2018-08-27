@@ -1,2 +1,2 @@
-# sonicreducer
+# tusk.rocks
 Easily share music in the fediverse

@@ -5,8 +5,8 @@ class DefaultConfig(object):
     CSRF_ENABLED = True
     SECRET_KEY = 'this-really-needs-to-be-changed'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///moa.db'
-    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://moa:moa@localhost/moa'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///tr.db'
+    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://tr:tr@localhost/tr'
     SEND = True
     SENTRY_DSN = ''
     HEALTHCHECKS = ''

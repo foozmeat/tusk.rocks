@@ -105,3 +105,4 @@ venv.bak/
 /config.py
 /sr.db
 /.idea
+/tr.db

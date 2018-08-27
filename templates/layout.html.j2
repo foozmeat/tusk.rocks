@@ -16,7 +16,7 @@
 </head>
 <body>
 <div class="center">
-Song Delivery
+    {{ app.config.get('SITE_NAME', None) }}
 
     <p id="cookiecheck" class="message" style="display: none;">Please allow cookies for this site or it won't work
         properly.</p>

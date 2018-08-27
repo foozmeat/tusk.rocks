@@ -1,7 +1,7 @@
 from flask import url_for
 from mastodon import Mastodon, MastodonNetworkError
 
-from sr.models import MastodonHost
+from tr.models import MastodonHost
 
 
 def get_or_create_host(db, app, hostname):
@@ -11,7 +11,7 @@ def get_or_create_host(db, app, hostname):
 
         try:
             client_id, client_secret = Mastodon.create_app(
-                    "SonicReducer",
+                    f"{app.config.get('SITE_NAME', None)}",
                     scopes=["read", "write"],
                     api_base_url=f"https://{hostname}",
                     website=f"https://{app.config.get('SITE_NAME', None)}/",
