@@ -1,0 +1,18 @@
+{% extends "layout.html.j2" %}
+{% block body %}
+    {% if g.m_user %}
+        <p>Mastodon: <strong>{{ g.m_user.username }}@{{ g.m_user.host }}</strong></p>
+
+        <form method="POST" action="{{ url_for('delete') }}">
+            <input type="submit" value="Delete">
+        </form>
+
+    {% else %}
+        <form action="{{ url_for('mastodon_login') }}" method="POST">
+            {{ mform.mastodon_id.label }}:{{ mform.mastodon_id(placeholder='yourid@mastodon.instance', size=30) }}
+            {{ mform.csrf_token }}
+            <input type=submit value="OK">
+        </form>
+    {% endif %}
+
+{% endblock %}

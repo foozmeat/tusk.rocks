@@ -1,0 +1,20 @@
+class DefaultConfig(object):
+    DEBUG = False
+    TESTING = False
+    CSRF_ENABLED = True
+    SECRET_KEY = 'this-really-needs-to-be-changed'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///moa.db'
+    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://moa:moa@localhost/moa'
+    SEND = True
+    SENTRY_DSN = ''
+    HEALTHCHECKS = ''
+    MAIL_SERVER = None
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = ''
+    MAIL_PASSWORD = ''
+    MAIL_TO = ''
+    MAIL_DEFAULT_SENDER = ''
+    WORKER_JOBS = 1
+    MAINTENANCE_MODE = False

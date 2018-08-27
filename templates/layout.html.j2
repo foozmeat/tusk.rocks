@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>song.delivery</title>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://song.delivery"/>
+    <meta property="og:title" content="Song Delivery"/>
+    <meta property="og:description" content="Post songs to the fediverse"/>
+
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="Song Delivery"/>
+    <meta name="twitter:description" content="Post songs to the fediverse"/>
+
+</head>
+<body>
+<div class="center">
+Song Delivery
+
+    <p id="cookiecheck" class="message" style="display: none;">Please allow cookies for this site or it won't work
+        properly.</p>
+
+    {% for message in get_flashed_messages() %}
+        <p class=message>{{ message }}</p>
+    {% endfor %}
+
+    {% block body %}{% endblock %}
+
+</div>
+<script>
+    if (!navigator.cookieEnabled) {
+        var el = document.getElementById('cookiecheck');
+        el.style.display = "block";
+    }
+</script>
+</body>
+</html>
