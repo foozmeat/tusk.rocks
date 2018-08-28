@@ -2,10 +2,10 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>song.delivery</title>
+    <title>{{ app.config.get('SITE_NAME') }}</title>
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
     <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://{{ app.config.get('SITE_NAME', None) }}"/>
+    <meta property="og:url" content="{{ app.config.get('SITE_URL') }}"/>
     <meta property="og:title" content="Song Delivery"/>
     <meta property="og:description" content="Post songs to the fediverse"/>
 

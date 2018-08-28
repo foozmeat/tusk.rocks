@@ -1,6 +1,9 @@
+import logging
 import re
 from datetime import datetime, timedelta
 
+import requests
+from requests import Request
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, MetaData, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -9,6 +12,8 @@ metadata = MetaData()
 Base = declarative_base(metadata=metadata)
 
 PENALTY_TIME = 600  # 10 minutes
+
+l = logging.getLogger('worker')
 
 
 class Settings(Base):
@@ -49,6 +54,9 @@ class Post(Base):
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime)
 
+    oembed_fetched = False
+    __oembed = None
+
     @property
     def share_link_is_song_link(self):
         pattern = re.compile("^https://song.link/")
@@ -63,6 +71,54 @@ class Post(Base):
             return self.share_link
         else:
             return f"https://song.link/{self.share_link}"
+
+    def validate_song_link(self):
+
+        req = Request('GET', self.song_link, headers={'User-Agent': 'curl/7.54.0'})
+        prepped = req.prepare()
+        s = requests.Session()
+        r = s.send(prepped)
+
+        if r.status_code == 200:
+            self.share_link = r.url
+
+    def oembed(self):
+        if not self.oembed_fetched:
+            if self.share_link_is_song_link:
+                url = f"https://song.link/oembed?url={self.share_link}&format=json"
+                l.debug(url)
+
+                req = Request('GET',
+                              url,
+                              headers={'User-Agent': 'curl/7.54.0'})
+                prepped = req.prepare()
+                s = requests.Session()
+                r = s.send(prepped)
+
+                try:
+                    self.__oembed = r.json()
+                    self.oembed_fetched = True
+                except ValueError:
+                    return None
+            else:
+                return None
+
+        return self.__oembed
+
+    def thumbnail_url(self):
+        oembed = self.oembed()
+        if oembed:
+            return oembed['thumbnail_url']
+        else:
+            return None
+
+    def preview_content(self):
+        oembed = self.oembed()
+
+        if oembed:
+            return oembed['html']
+        else:
+            return "<p>Hmmm we couldn't find a preview for that</p>"
 
 
 class User(Base):

@@ -3,17 +3,24 @@
     {% if g.m_user %}
         <p>Mastodon: <strong>{{ g.m_user.username }}@{{ g.m_user.host }}</strong></p>
 
-        <form method="POST" action="{{ url_for('delete') }}">
-            <input type="submit" value="Delete">
+        <form method="POST" action="{{ url_for('logout') }}">
+            <input type="submit" value="Logout">
         </form>
 
         <br>
 
-        <form method="POST" action="{{ url_for('make_post') }}">
+        <form method="POST" action="{{ url_for('index') }}">
             {{ sform.comment.label }}:{{ sform.comment(size=500) }}<br>
             {{ sform.share_link.label }}:{{ sform.share_link(size=50) }}
+            <div>Plug in any kind of streaming link you like.</div>
+            <input type="submit" name="task" value="Preview">
+
+            {% if is_preview %}
+                <input type="submit" name="task" value="Save">
+                <div>Preview</div>
+                {{ preview_data }}
+            {% endif %}
             {{ sform.csrf_token }}
-            <input type="submit" value="Save">
         </form>
     {% else %}
         <form action="{{ url_for('mastodon_login') }}" method="POST">

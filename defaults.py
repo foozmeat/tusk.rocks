@@ -1,5 +1,6 @@
 class DefaultConfig(object):
     SITE_NAME = "my.site"
+    SITE_URL = "https://my.site"
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True

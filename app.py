@@ -7,11 +7,12 @@ from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from mastodon import MastodonIllegalArgumentError, MastodonUnauthorizedError
+from requests import Request
 from sqlalchemy import exc
 
 from tr.forms import MastodonIDForm, SubmissionForm
 from tr.helpers import get_or_create_host, mastodon_api
-from tr.models import Settings, User, metadata, Post
+from tr.models import Post, Settings, User, metadata
 
 app = Flask(__name__)
 
@@ -58,18 +59,48 @@ def before_request():
     app.logger.info(session)
 
 
-@app.route('/')
+@app.route('/', methods=["GET", "POST"])
 def index():
     if app.config['MAINTENANCE_MODE']:
         return render_template('maintenance.html.j2')
 
     mform = MastodonIDForm()
     sform = SubmissionForm()
+    preview_data = None
+    is_preview = False
+
+    if request.method == 'POST':
+        if sform.validate_on_submit():
+            post = Post()
+            sform.populate_obj(post)
+
+            if request.form["task"] == 'Preview':
+
+                post.validate_song_link()
+                sform.share_link.data = post.share_link
+                preview_data = post.preview_content()
+                is_preview = True
+
+            elif request.form["task"] == 'Save':
+                user = db.session.query(User).filter_by(
+                        mastodon_user=session['mastodon']['username']
+                ).first()
+                post.user_id = user.id
+                db.session.add(post)
+                db.session.commit()
+                flash(f"Post created")
+                sform = SubmissionForm()
+
+        else:
+            for e in sform.errors.items():
+                flash(e[1][0])
 
     return render_template('index.html.j2',
                            mform=mform,
                            sform=sform,
-                           app=app
+                           app=app,
+                           preview_data=preview_data,
+                           is_preview=is_preview
                            )
 
 
@@ -87,7 +118,6 @@ def make_post():
         post.user_id = user.id
         db.session.add(post)
         db.session.commit()
-
 
         flash(f"Post created")
 

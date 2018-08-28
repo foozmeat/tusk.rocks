@@ -4,7 +4,11 @@ import logging
 import os
 import smtplib
 import sys
+import tempfile
 import time
+from os.path import splitext
+from urllib.parse import urlparse
+
 import requests
 from datetime import datetime
 from pathlib import Path
@@ -75,6 +79,7 @@ for post in posts:
 
     user = post.user
     mastodonhost = user.mastodon_host
+    media_ids = []
 
     mast_api = Mastodon(
             client_id=mastodonhost.client_id,
@@ -87,26 +92,41 @@ for post in posts:
 
     l.info(f"{user.mastodon_user}")
 
-    l.info(f"Checking {post.song_link}")
+    attachment_url = post.thumbnail_url()
 
-    req = Request('GET', post.song_link, headers={'User-Agent': 'curl/7.54.0'})
-    prepped = req.prepare()
-    r = s.send(prepped)
+    if attachment_url:
+        l.debug(post.oembed())
+        l.info(f"Downloading {attachment_url}")
+        attachment_file = requests.get(attachment_url, stream=True)
+        attachment_file.raw.decode_content = True
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        temp_file.write(attachment_file.raw.read())
+        temp_file.close()
 
-    if r.status_code == 404:
-        song_link = post.share_link
-    else:
-        song_link = r.url
+        path = urlparse(attachment_url).path
+        file_extension = splitext(path)[1]
+        upload_file_name = temp_file.name + file_extension
+        os.rename(temp_file.name, upload_file_name)
+        l.debug(f'Uploading {upload_file_name}')
 
-    message_to_post = f"{post.comment}\n\n{song_link}"
+        try:
+            media_ids.append(mast_api.media_post(upload_file_name))
+        except MastodonAPIError as e:
+            l.error(e)
+
+        except MastodonNetworkError as e:
+            l.error(e)
+
+    message_to_post = f"{post.comment}\n\n{post.share_link}"
 
     try:
         new_message = mast_api.status_post(
                 message_to_post,
-                visibility='public')
+                visibility='public',
+                media_ids=media_ids)
 
-        l.info(new_message)
-        post_success = True
+        # l.info(new_message)
+        post.updated = datetime.now()
 
     except MastodonAPIError as e:
         l.error(e)
@@ -117,6 +137,6 @@ for post in posts:
         continue
 
     post.post_link = new_message['url']
-    post.posted = True
+    # post.posted = True
     session.commit()
 

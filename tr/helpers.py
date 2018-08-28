@@ -11,10 +11,10 @@ def get_or_create_host(db, app, hostname):
 
         try:
             client_id, client_secret = Mastodon.create_app(
-                    f"{app.config.get('SITE_NAME', None)}",
+                    f"{app.config.get('SITE_NAME')}",
                     scopes=["read", "write"],
                     api_base_url=f"https://{hostname}",
-                    website=f"https://{app.config.get('SITE_NAME', None)}/",
+                    website=f"{app.config.get('SITE_URL')}",
                     redirect_uris=url_for("mastodon_oauthorized", _external=True)
             )
 
