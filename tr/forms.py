@@ -12,7 +12,7 @@ class SubmissionForm(FlaskForm):
     comment = TextAreaField('Message', [length(max=500)])
     share_link = URLField('Song/Album Link', [url()])
     toot_visibility = SelectField('Toot visibility', choices=[
-        ('public', 'Public'),
+        ('', 'Public'),
         ('private', "Private"),
         ('unlisted', 'Unlisted'),
     ])

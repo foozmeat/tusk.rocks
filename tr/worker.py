@@ -118,11 +118,14 @@ for post in posts:
             l.error(e)
 
     message_to_post = f"{post.comment}\n\n{post.share_link}"
+    vis = 'public'
+    if post.toot_visibility:
+        vis = post.toot_visibility
 
     try:
         new_message = mast_api.status_post(
                 message_to_post,
-                visibility='public',
+                visibility=vis,
                 media_ids=media_ids)
 
         # l.info(new_message)
