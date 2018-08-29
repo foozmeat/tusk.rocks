@@ -1,8 +1,9 @@
-import logging
+import pprint as pp
 import re
 from datetime import datetime, timedelta
 
 import requests
+from metadata_parser import MetadataParser
 from requests import Request
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, MetaData, String
 from sqlalchemy.ext.declarative import declarative_base
@@ -12,8 +13,6 @@ metadata = MetaData()
 Base = declarative_base(metadata=metadata)
 
 PENALTY_TIME = 600  # 10 minutes
-
-l = logging.getLogger('worker')
 
 
 class Settings(Base):
@@ -82,12 +81,15 @@ class Post(Base):
 
         if r.status_code == 200:
             self.share_link = r.url
+            # pp.pprint(r.text)
+
+            mp = MetadataParser(html=r.text, search_head_only=True)
+            pp.pprint(mp.metadata)
 
     def oembed(self):
         if not self.oembed_fetched:
             if self.share_link_is_song_link:
                 url = f"https://song.link/oembed?url={self.share_link}&format=json"
-                l.debug(url)
 
                 req = Request('GET',
                               url,
@@ -138,5 +140,3 @@ class User(Base):
 
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime)
-
-

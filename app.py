@@ -25,7 +25,7 @@ logHandler = TimedRotatingFileHandler('logs/app.log', when='D', backupCount=7)
 logHandler.setFormatter(formatter)
 
 # set the log handler level
-logHandler.setLevel(logging.INFO)
+logHandler.setLevel(logging.DEBUG)
 app.logger.addHandler(logHandler)
 app.logger.info("Starting up...")
 
