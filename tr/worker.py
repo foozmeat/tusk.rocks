@@ -2,20 +2,16 @@ import argparse
 import importlib
 import logging
 import os
-import smtplib
 import sys
 import tempfile
 import time
+from datetime import datetime
 from os.path import splitext
+from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
-from datetime import datetime
-from pathlib import Path
-from typing import Any, List
-
 from mastodon import Mastodon, MastodonAPIError, MastodonNetworkError
-from requests import Request
 from sqlalchemy import create_engine, exc, func
 from sqlalchemy.orm import Session
 
@@ -28,6 +24,7 @@ c = getattr(importlib.import_module('config'), config)
 
 if c.SENTRY_DSN:
     from raven import Client
+
     client = Client(c.SENTRY_DSN)
 
 parser = argparse.ArgumentParser(description='Worker')
@@ -47,6 +44,16 @@ if c.DEBUG:
 else:
     l.setLevel(logging.INFO)
 
+
+def check_worker_stop():
+    if Path('worker_stop').exists():
+        l.info("Worker paused...exiting")
+        # session.add(worker_stat)
+        session.commit()
+        session.close()
+        exit(0)
+
+
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 l.info("Starting up…")
@@ -61,13 +68,7 @@ except exc.SQLAlchemyError as e:
 
 session = Session(engine)
 
-if Path('worker_stop').exists():
-    l.info("Worker paused...exiting")
-    # worker_stat.time = 0
-    # session.add(worker_stat)
-    # session.commit()
-    session.close()
-    exit(0)
+check_worker_stop()
 
 posts = session.query(Post).filter_by(posted=False)
 s = requests.Session()
@@ -143,3 +144,4 @@ for post in posts:
     # post.posted = True
     session.commit()
 
+    check_worker_stop()
