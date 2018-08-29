@@ -95,7 +95,7 @@ for post in posts:
 
     attachment_url = post.thumbnail_url()
 
-    if attachment_url:
+    if c.SEND and attachment_url:
         l.debug(post.oembed())
         l.info(f"Downloading {attachment_url}")
         attachment_file = requests.get(attachment_url, stream=True)
@@ -123,25 +123,27 @@ for post in posts:
     if post.toot_visibility:
         vis = post.toot_visibility
 
-    try:
-        new_message = mast_api.status_post(
-                message_to_post,
-                visibility=vis,
-                media_ids=media_ids)
+    l.info(message_to_post)
 
-        # l.info(new_message)
-        post.updated = datetime.now()
+    if c.SEND:
+        try:
+            new_message = mast_api.status_post(
+                    message_to_post,
+                    visibility=vis,
+                    media_ids=media_ids)
 
-    except MastodonAPIError as e:
-        l.error(e)
-        continue
+            post.updated = datetime.now()
+            post.post_link = new_message['url']
+            post.posted = True
 
-    except MastodonNetworkError:
-        l.error(e)
-        continue
+        except MastodonAPIError as e:
+            l.error(e)
+            continue
 
-    post.post_link = new_message['url']
-    # post.posted = True
+        except MastodonNetworkError as e:
+            l.error(e)
+            continue
+
     session.commit()
 
     check_worker_stop()

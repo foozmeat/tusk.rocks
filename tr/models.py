@@ -56,6 +56,7 @@ class Post(Base):
 
     oembed_fetched = False
     __oembed = None
+    md = None
 
     @property
     def share_link_is_song_link(self):
@@ -84,6 +85,7 @@ class Post(Base):
             # pp.pprint(r.text)
 
             mp = MetadataParser(html=r.text, search_head_only=True)
+            self.md = mp.metadata
             pp.pprint(mp.metadata)
 
     def oembed(self):
@@ -109,9 +111,9 @@ class Post(Base):
         return self.__oembed
 
     def thumbnail_url(self):
-        oembed = self.oembed()
-        if oembed:
-            return oembed['thumbnail_url']
+        self.validate_song_link()
+        if self.md:
+            return self.md['meta']['og:image']
         else:
             return None
 
