@@ -239,7 +239,7 @@ def delete():
     return redirect(url_for('logout'))
 
 
-@app.route('/logout')
+@app.route('/logout', methods=["POST"])
 def logout():
     session.pop('mastodon', None)
     return redirect(url_for('index'))
