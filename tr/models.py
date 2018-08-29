@@ -50,6 +50,7 @@ class Post(Base):
     share_link = Column(String(400), nullable=False)
     posted = Column(Boolean, nullable=False, default=False)
     post_link = Column(String(400), nullable=True)
+    toot_visibility = Column(String(40), nullable=True)
 
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime)
