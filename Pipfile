@@ -13,6 +13,8 @@ pymysql = "*"
 requests = "*"
 raven = {version = "*", extras = ["flask"]}
 flask-wtf = "*"
+metadata-parser = "*"
+lxml = "*"
 
 [dev-packages]
 
