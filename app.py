@@ -88,7 +88,7 @@ def index():
                 db.session.add(post)
                 db.session.commit()
                 flash(f"Post created")
-                sform = SubmissionForm()
+                return redirect(url_for('index'))
 
         else:
             for e in sform.errors.items():
