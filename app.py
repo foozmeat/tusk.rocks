@@ -64,7 +64,6 @@ def index():
     if app.config['MAINTENANCE_MODE']:
         return render_template('maintenance.html.j2')
 
-    mform = MastodonIDForm()
     sform = SubmissionForm()
     preview_data = None
     is_preview = False
@@ -96,7 +95,6 @@ def index():
                 flash(e[1][0])
 
     return render_template('index.html.j2',
-                           mform=mform,
                            sform=sform,
                            app=app,
                            preview_data=preview_data,
@@ -104,10 +102,11 @@ def index():
                            )
 
 
-@app.route('/mastodon_login', methods=['POST'])
+@app.route('/mastodon_login', methods=['GET', 'POST'])
 def mastodon_login():
     form = MastodonIDForm()
-    if form.validate_on_submit():
+
+    if request.method == 'POST' and form.validate_on_submit():
 
         user_id = form.mastodon_id.data
 
@@ -133,7 +132,14 @@ def mastodon_login():
             )
         else:
             flash(f"There was a problem connecting to the mastodon server.")
-    else:
+    elif request.method == 'GET':
+
+        return render_template('m_login.html.j2',
+                               mform=form,
+                               app=app,
+                               )
+
+    elif request.method == 'POST':
         flash("Invalid Mastodon ID")
 
     return redirect(url_for('index'))
@@ -239,7 +245,7 @@ def delete():
     return redirect(url_for('logout'))
 
 
-@app.route('/logout', methods=["POST"])
+@app.route('/logout', methods=["GET", "POST"])
 def logout():
     session.pop('mastodon', None)
     return redirect(url_for('index'))

@@ -2,13 +2,8 @@
 {% block body %}
     {% if g.m_user %}
         <p>Mastodon: <strong>{{ g.m_user.username }}@{{ g.m_user.host }}</strong></p>
-
-        <form method="POST" action="{{ url_for('logout') }}">
-            <input type="submit" value="Logout">
-        </form>
-
-        <br>
-
+        <div class="login-button"><a href="{{ url_for('logout') }}">Logout</a></div>
+        <hr>
         <form method="POST" action="{{ url_for('index') }}">
             <div>{{ sform.comment.label }}</div>
             <div>{{ sform.comment(size=500) }}</div>
@@ -21,7 +16,9 @@
 
             {% if is_preview %}
                 <div>Preview</div>
-                {{ preview_data }}
+                <div class="preview">
+                    {{ preview_data }}
+                </div>
             {% endif %}
 
             <input type="submit" name="task" value="Preview">
@@ -31,13 +28,11 @@
 
             {{ sform.csrf_token }}
         </form>
+
     {% else %}
-        <form action="{{ url_for('mastodon_login') }}" method="POST">
-            {{ mform.mastodon_id.label }}:{{ mform.mastodon_id(placeholder='yourid@mastodon.instance', size=30) }}
-            {{ mform.csrf_token }}
-            <input type=submit value="OK">
-        </form>
+        <div class="login-button">
+            <a href="{{ url_for('mastodon_login') }}">Connect your Mastodon Account</a>
+        </div>
     {% endif %}
 
-    <p>Powered by <a href="https://song.link">Songlink</a></p>
 {% endblock %}

@@ -7,17 +7,17 @@
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
     <meta property="og:type" content="website"/>
     <meta property="og:url" content="{{ app.config.get('SITE_URL') }}"/>
-    <meta property="og:title" content="Song Delivery"/>
+    <meta property="og:title" content="Tusk Rocks"/>
     <meta property="og:description" content="Post songs to the fediverse"/>
 
     <meta name="twitter:card" content="summary"/>
-    <meta name="twitter:title" content="Song Delivery"/>
+    <meta name="twitter:title" content="Tusk Rocks"/>
     <meta name="twitter:description" content="Post songs to the fediverse"/>
 
 </head>
 <body>
 <div class="center">
-    (hella alpha)
+    <p>(this is hella alpha)</p>
 
     <p id="cookiecheck" class="message" style="display: none;">Please allow cookies for this site or it won't work
         properly.</p>
@@ -27,6 +27,8 @@
     {% endfor %}
 
     {% block body %}{% endblock %}
+
+    <p>Powered by <a href="https://song.link">Songlink</a></p>
 
 </div>
 <script>

@@ -1,16 +1,53 @@
 body {
-    width: 400px;
+    font-family: Monaco, monospace;
+}
+
+input, select {
+    font-family: Monaco, monospace;
+
+}
+
+form {
+    /*display: inline;*/
+}
+
+.center {
     text-align: center;
     margin: auto;
-    padding: 10px;
+    /*width: 400px;*/
+    border: 1px solid #555555;
 }
 
 textarea {
-    width: 100%;
+    width: 400px;
     height: 100px;
+}
+
+.login-button {
+    border: 1px solid #555555;
+    padding: 10px;
+    width:100px;
+    margin: auto;
+    border-radius: 10px;
 }
 
 iframe {
     width: 100%;
+    height: 100%;
+}
+
+.message {
+    font-weight: bold;
+    color: red;
+}
+
+.message:before {
+    content: "»";
+    margin-right: 6px;
+}
+
+.preview {
+    margin: auto;
+    width: 400px;
     height: 199px;
 }
