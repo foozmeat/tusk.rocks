@@ -20,3 +20,4 @@ class DefaultConfig(object):
     MAIL_DEFAULT_SENDER = ''
     WORKER_JOBS = 1
     MAINTENANCE_MODE = False
+    DEVELOPMENT = False
