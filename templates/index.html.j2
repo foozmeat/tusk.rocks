@@ -10,16 +10,25 @@
         <br>
 
         <form method="POST" action="{{ url_for('index') }}">
-            {{ sform.comment.label }}:{{ sform.comment(size=500) }}<br>
-            {{ sform.share_link.label }}:{{ sform.share_link(size=50) }}
-            <div>Plug in any kind of streaming link you like.</div>
-            <input type="submit" name="task" value="Preview">
+            <div>{{ sform.comment.label }}</div>
+            <div>{{ sform.comment(size=500) }}</div>
+
+            <div>{{ sform.toot_visibility.label }}</div>
+            <div>{{ sform.toot_visibility }}</div>
+
+            <div>{{ sform.share_link.label }}</div>
+            <div>{{ sform.share_link(placeholder="Plug in any kind of streaming link you like", size=50) }}</div>
 
             {% if is_preview %}
-                <input type="submit" name="task" value="Save">
                 <div>Preview</div>
                 {{ preview_data }}
             {% endif %}
+
+            <input type="submit" name="task" value="Preview">
+            {% if is_preview %}
+                <input type="submit" name="task" value="Send">
+            {% endif %}
+
             {{ sform.csrf_token }}
         </form>
     {% else %}
@@ -30,4 +39,5 @@
         </form>
     {% endif %}
 
+    <p>Powered by <a href="https://song.link">Songlink</a></p>
 {% endblock %}

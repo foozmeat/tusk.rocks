@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ app.config.get('SITE_NAME') }}</title>
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
     <meta property="og:type" content="website"/>
@@ -13,10 +14,32 @@
     <meta name="twitter:title" content="Song Delivery"/>
     <meta name="twitter:description" content="Post songs to the fediverse"/>
 
+    <style>
+        body {
+            width: 400px;
+            text-align: center;
+            margin: auto;
+            {#border: 2px solid black;#}
+            padding: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+
+        iframe {
+            width: 400px;
+            height: 199px;
+        }
+        {#input {#}
+        {#    width: 100%;#}
+        {#}#}
+    </style>
 </head>
 <body>
 <div class="center">
-    {{ app.config.get('SITE_NAME', None) }}
+    (hella alpha)
 
     <p id="cookiecheck" class="message" style="display: none;">Please allow cookies for this site or it won't work
         properly.</p>

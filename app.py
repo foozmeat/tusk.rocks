@@ -81,7 +81,7 @@ def index():
                 preview_data = post.preview_content()
                 is_preview = True
 
-            elif request.form["task"] == 'Save':
+            elif request.form["task"] == 'Send':
                 user = db.session.query(User).filter_by(
                         mastodon_user=session['mastodon']['username']
                 ).first()
@@ -102,31 +102,6 @@ def index():
                            preview_data=preview_data,
                            is_preview=is_preview
                            )
-
-
-@app.route('/make_post', methods=["POST"])
-def make_post():
-    form = SubmissionForm()
-    if form.validate_on_submit():
-
-        user = db.session.query(User).filter_by(
-                mastodon_user=session['mastodon']['username']
-        ).first()
-
-        post = Post()
-        form.populate_obj(post)
-        post.user_id = user.id
-        db.session.add(post)
-        db.session.commit()
-
-        flash(f"Post created")
-
-    else:
-        for e in form.errors.items():
-            flash(e[1][0])
-        return redirect(url_for('index'))
-
-    return redirect(url_for('index'))
 
 
 @app.route('/mastodon_login', methods=['POST'])
