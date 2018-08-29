@@ -19,7 +19,8 @@ form {
 }
 
 textarea {
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     height: 100px;
 }
 
@@ -50,4 +51,8 @@ iframe {
     margin: auto;
     width: 400px;
     height: 199px;
+}
+
+.input-group {
+    margin: 10px;
 }

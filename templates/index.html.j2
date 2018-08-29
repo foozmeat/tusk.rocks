@@ -5,18 +5,24 @@
         <div class="login-button"><a href="{{ url_for('logout') }}">Logout</a></div>
         <hr>
         <form method="POST" action="{{ url_for('index') }}">
-            <div>{{ sform.comment.label }}</div>
-            <div>{{ sform.comment(size=500) }}</div>
+            <div class="input-group">
+                <div>{{ sform.comment.label }}</div>
+                <div>{{ sform.comment(size=500) }}</div>
+            </div>
 
-            <div>{{ sform.toot_visibility.label }}</div>
-            <div>{{ sform.toot_visibility }}</div>
+            <div class="input-group">
+                <div>{{ sform.toot_visibility.label }}</div>
+                <div>{{ sform.toot_visibility }}</div>
+            </div>
 
-            <div>{{ sform.share_link.label }}</div>
-            <div>{{ sform.share_link(placeholder="Plug in any kind of streaming link you like", size=50) }}</div>
+            <div class="input-group">
+                <div>{{ sform.share_link.label }}</div>
+                <div>{{ sform.share_link(placeholder="Plug in any kind of streaming link you like", size=50) }}</div>
+            </div>
 
             {% if is_preview %}
-                <div>Preview</div>
                 <div class="preview">
+                    <div>Preview</div>
                     {{ preview_data }}
                 </div>
             {% endif %}
