@@ -147,10 +147,6 @@ for post in posts:
                     visibility=vis,
                     media_ids=media_ids)
 
-            post.updated = datetime.now()
-            post.status_id = new_message["id"]
-            post.posted = True
-
         except MastodonAPIError as e:
             l.error(e)
             continue
@@ -161,7 +157,11 @@ for post in posts:
             session.commit()
             continue
 
-    session.commit()
+        else:
+            post.updated = datetime.now()
+            post.status_id = new_message["id"]
+            post.posted = True
+            session.commit()
 
     check_worker_stop()
 

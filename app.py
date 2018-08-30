@@ -280,6 +280,10 @@ def logout():
     session.pop('mastodon', None)
     return redirect(url_for('community'))
 
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html.j2')
+
 
 if __name__ == '__main__':
     app.run()
