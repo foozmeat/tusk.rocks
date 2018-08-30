@@ -120,9 +120,11 @@ for post in posts:
             media_ids.append(mast_api.media_post(upload_file_name))
         except MastodonAPIError as e:
             l.error(e)
+            continue
 
         except MastodonNetworkError as e:
             l.error(e)
+            continue
 
     message_to_post = f"{post.comment}\n\n{post.share_link}"
     vis = 'public'
