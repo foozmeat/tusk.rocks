@@ -148,7 +148,7 @@ for post in posts:
                     media_ids=media_ids)
 
             post.updated = datetime.now()
-            post.post_link = new_message['url']
+            post.status_id = new_message["id"]
             post.posted = True
 
         except MastodonAPIError as e:

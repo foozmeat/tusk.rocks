@@ -50,6 +50,7 @@ class Post(Base):
     posted = Column(Boolean, nullable=False, default=False)
     post_link = Column(String(400), nullable=True)
     toot_visibility = Column(String(40), nullable=True)
+    status_id = Column(BigInteger, default=0)
 
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime)
@@ -86,7 +87,7 @@ class Post(Base):
 
             mp = MetadataParser(html=r.text, search_head_only=True)
             self.md = mp.metadata
-            pp.pprint(mp.metadata)
+            # pp.pprint(mp.metadata)
 
     def oembed(self):
         if not self.oembed_fetched:
@@ -145,6 +146,5 @@ class User(Base):
 
     @property
     def profile_link(self):
-
         url = f"{self.mastodon_host.hostname}/@{self.mastodon_user}"
         return url
