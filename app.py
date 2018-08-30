@@ -101,6 +101,23 @@ def post():
                 db.session.add(post)
                 db.session.commit()
                 flash(f"Post created")
+
+                if app.config.get('MAIL_SERVER', None):
+
+                    body = render_template('email/new_post.txt.j2',
+                                           user=user,
+                                           post=post)
+
+                    msg = Message(subject=f"New Post",
+                                  body=body,
+                                  recipients=[app.config.get('MAIL_TO', None)])
+
+                    try:
+                        mail.send(msg)
+
+                    except Exception as e:
+                        app.logger.error(e)
+
                 return redirect(url_for('community'))
 
         else:
@@ -224,7 +241,7 @@ def mastodon_oauthorized():
 
             if app.config.get('MAIL_SERVER', None):
 
-                body = render_template('new_user_email.txt.j2',
+                body = render_template('email/new_user_email.txt.j2',
                                        user=user)
                 msg = Message(subject=f"New {app.config.get('SITE_NAME', None)} user",
                               body=body,
