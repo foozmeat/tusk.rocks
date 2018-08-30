@@ -15,5 +15,5 @@ class SubmissionForm(FlaskForm):
         ('', 'Public'),
         ('private', "Followers only"),
         ('unlisted', 'Public but not visible on server timelines'),
-        ('direct', 'Hidden from everyone but still visible here')
+        ('direct', 'Hidden on Mastodon but still visible here')
     ])
