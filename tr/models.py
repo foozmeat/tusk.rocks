@@ -48,7 +48,6 @@ class Post(Base):
     comment = Column(String(500), nullable=False)
     share_link = Column(String(400), nullable=False)
     posted = Column(Boolean, nullable=False, default=False)
-    post_link = Column(String(400), nullable=True)
     toot_visibility = Column(String(40), nullable=True)
     status_id = Column(BigInteger, default=0)
 
@@ -126,6 +125,14 @@ class Post(Base):
         else:
             return "<p>Hmmm we couldn't find a preview for that</p>"
 
+    @property
+    def post_link(self):
+        if self.status_id:
+            output = f"{self.user.profile_link}/{self.status_id}"
+            return output
+        else:
+            return None
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -146,5 +153,5 @@ class User(Base):
 
     @property
     def profile_link(self):
-        url = f"{self.mastodon_host.hostname}/@{self.mastodon_user}"
+        url = f"https://{self.mastodon_host.hostname}/@{self.mastodon_user}"
         return url

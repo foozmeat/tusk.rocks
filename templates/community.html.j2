@@ -8,7 +8,7 @@
     <div class="community_posts">
     {% for post in posts %}
         <div class="comm_post">
-            <div class="user">From <a target=_new" href="https://{{ post.user.profile_link }}">{{ post.user.mastodon_user }}</a> • <a target=_new" href="{{ post.post_link }}">View Post</a></div>
+            <div class="user">From <a target=_new" href="{{ post.user.profile_link }}">{{ post.user.mastodon_user }}</a> • <a target=_new" href="{{ post.post_link }}">View Post</a></div>
             <div class="comment">{{ post.comment }}</div>
             <div class="preview">
             {{ post.preview_content() }}
