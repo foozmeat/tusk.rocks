@@ -1,6 +1,7 @@
 import argparse
 import importlib
 import logging
+import mimetypes
 import os
 import sys
 import tempfile
@@ -105,7 +106,12 @@ for post in posts:
         temp_file.close()
 
         path = urlparse(attachment_url).path
-        file_extension = splitext(path)[1]
+        file_extension = mimetypes.guess_extension(attachment_file.headers['Content-type'])
+
+        # ffs
+        if file_extension == '.jpe':
+            file_extension = '.jpg'
+
         upload_file_name = temp_file.name + file_extension
         os.rename(temp_file.name, upload_file_name)
         l.debug(f'Uploading {upload_file_name}')
