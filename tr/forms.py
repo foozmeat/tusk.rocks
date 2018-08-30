@@ -13,6 +13,7 @@ class SubmissionForm(FlaskForm):
     share_link = URLField('Song/Album Link', [url()])
     toot_visibility = SelectField('Toot visibility', choices=[
         ('', 'Public'),
-        ('private', "Private"),
-        ('unlisted', 'Unlisted'),
+        ('private', "Followers only"),
+        ('unlisted', 'Public but not visible on server timelines'),
+        ('direct', 'Hidden from everyone')
     ])
