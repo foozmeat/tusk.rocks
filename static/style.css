@@ -1,5 +1,8 @@
 body {
     font-family: Monaco, monospace;
+    max-width: 600px;
+    text-align: center;
+    margin: auto;
 }
 
 input, select {
@@ -48,8 +51,6 @@ iframe {
 }
 
 .preview {
-    border: 1px solid black;
-    /*display: inline;*/
     margin: auto;
     width: 400px;
     height: 220px;
@@ -57,4 +58,15 @@ iframe {
 
 .input-group {
     margin: 10px;
+}
+
+.community_posts {
+    width: 400px;
+    margin: auto;
+
+}
+.comm_post {
+    border-bottom: 1px solid black;
+    margin: 10px 0 10px 0;
+    text-align: left;
 }

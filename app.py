@@ -7,7 +7,6 @@ from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from mastodon import MastodonIllegalArgumentError, MastodonUnauthorizedError
-from requests import Request
 from sqlalchemy import exc
 
 from tr.forms import MastodonIDForm, SubmissionForm
@@ -59,8 +58,22 @@ def before_request():
     app.logger.info(session)
 
 
+@app.route('/community', methods=["GET", "POST"])
+def community():
+
+    # if request.form["task"] == 'Preview':
+
+    posts = db.session.query(Post).order_by(Post.updated.desc()).filter_by(posted=True).limit(10)
+
+    return render_template('community.html.j2',
+                           app=app,
+                           posts=posts
+                           )
+
+
 @app.route('/', methods=["GET", "POST"])
-def index():
+@app.route('/post', methods=["GET", "POST"])
+def post():
     if app.config['MAINTENANCE_MODE']:
         return render_template('maintenance.html.j2')
 
@@ -88,13 +101,13 @@ def index():
                 db.session.add(post)
                 db.session.commit()
                 flash(f"Post created")
-                return redirect(url_for('index'))
+                return redirect(url_for('community'))
 
         else:
             for e in sform.errors.items():
                 flash(e[1][0])
 
-    return render_template('index.html.j2',
+    return render_template('post.html.j2',
                            sform=sform,
                            app=app,
                            preview_data=preview_data,
@@ -112,7 +125,7 @@ def mastodon_login():
 
         if "@" not in user_id:
             flash('Invalid Mastodon ID')
-            return redirect(url_for('index'))
+            return redirect(url_for('community'))
 
         if user_id[0] == '@':
             user_id = user_id[1:]
@@ -142,7 +155,7 @@ def mastodon_login():
     elif request.method == 'POST':
         flash("Invalid Mastodon ID")
 
-    return redirect(url_for('index'))
+    return redirect(url_for('community'))
 
 
 @app.route('/mastodon_oauthorized')
@@ -159,7 +172,7 @@ def mastodon_oauthorized():
 
         if not host:
             flash('There was an error. Please ensure you allow this site to use cookies.')
-            return redirect(url_for('index'))
+            return redirect(url_for('community'))
 
         session.pop('mastodon_host', None)
 
@@ -174,7 +187,7 @@ def mastodon_oauthorized():
         except MastodonIllegalArgumentError as e:
 
             flash(f"There was a problem connecting to the mastodon server. The error was {e}")
-            return redirect(url_for('index'))
+            return redirect(url_for('community'))
 
         # app.logger.info(f"Access code {access_code}")
 
@@ -189,7 +202,7 @@ def mastodon_oauthorized():
 
         except MastodonUnauthorizedError as e:
             flash(f"There was a problem connecting to the mastodon server. The error was {e}")
-            return redirect(url_for('index'))
+            return redirect(url_for('community'))
 
         user = db.session.query(User).filter_by(
                 mastodon_user=session['mastodon']['username']
@@ -223,7 +236,7 @@ def mastodon_oauthorized():
                 except Exception as e:
                     app.logger.error(e)
 
-    return redirect(url_for('index'))
+    return redirect(url_for('community'))
 
 
 @app.route('/delete', methods=["POST"])
@@ -248,7 +261,7 @@ def delete():
 @app.route('/logout', methods=["GET", "POST"])
 def logout():
     session.pop('mastodon', None)
-    return redirect(url_for('index'))
+    return redirect(url_for('community'))
 
 
 if __name__ == '__main__':

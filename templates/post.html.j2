@@ -1,10 +1,9 @@
 {% extends "layout.html.j2" %}
 {% block body %}
+    {% include 'masto_auth.html.j2' %}
+
     {% if g.m_user %}
-        <p>Mastodon: <strong>{{ g.m_user.username }}@{{ g.m_user.host }}</strong></p>
-        <div class="login-button"><a href="{{ url_for('logout') }}">Logout</a></div>
-        <hr>
-        <form method="POST" action="{{ url_for('index') }}">
+        <form method="POST" action="{{ url_for('post') }}">
             <div class="input-group">
                 <div>{{ sform.comment.label }}</div>
                 <div>{{ sform.comment(size=500) }}</div>
@@ -35,10 +34,6 @@
             {{ sform.csrf_token }}
         </form>
 
-    {% else %}
-        <div class="login-button">
-            <a href="{{ url_for('mastodon_login') }}">Connect your Mastodon Account</a>
-        </div>
     {% endif %}
 
 {% endblock %}

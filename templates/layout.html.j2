@@ -19,7 +19,10 @@
 <div class="center">
     <p>(this is hella alpha)</p>
 
-    <p id="cookiecheck" class="message" style="display: none;">Please allow cookies for this site or it won't work properly.</p>
+    <p><a href="{{ url_for('post') }}">Post</a> | <a href="{{ url_for('community') }}">Community</a></p>
+
+    <p id="cookiecheck" class="message" style="display: none;">Please allow cookies for this site or it won't work
+        properly.</p>
 
     {% for message in get_flashed_messages() %}
         <p class=message>{{ message }}</p>

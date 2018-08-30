@@ -142,3 +142,9 @@ class User(Base):
 
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime)
+
+    @property
+    def profile_link(self):
+
+        url = f"{self.mastodon_host.hostname}/@{self.mastodon_user}"
+        return url
