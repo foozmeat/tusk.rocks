@@ -81,6 +81,11 @@ for post in posts:
 
     user = post.user
     mastodonhost = user.mastodon_host
+
+    if mastodonhost.defer_until and mastodonhost.defer_until > datetime.now():
+        l.warning(f"Deferring connections to {mastodonhost.hostname}")
+        continue
+
     media_ids = []
 
     mast_api = Mastodon(
@@ -124,6 +129,8 @@ for post in posts:
 
         except MastodonNetworkError as e:
             l.error(e)
+            mastodonhost.defer()
+            session.commit()
             continue
 
     message_to_post = f"{post.comment}\n\n{post.share_link}"
@@ -150,6 +157,8 @@ for post in posts:
 
         except MastodonNetworkError as e:
             l.error(e)
+            mastodonhost.defer()
+            session.commit()
             continue
 
     session.commit()
