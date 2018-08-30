@@ -164,3 +164,5 @@ for post in posts:
     session.commit()
 
     check_worker_stop()
+
+l.info(f"-- All done")
