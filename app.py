@@ -60,7 +60,6 @@ def before_request():
 
 @app.route('/community', methods=["GET", "POST"])
 def community():
-
     # if request.form["task"] == 'Preview':
 
     posts = db.session.query(Post).order_by(Post.updated.desc()).filter_by(posted=True).limit(10)
@@ -95,8 +94,9 @@ def post():
 
             elif request.form["task"] == 'Send':
                 user = db.session.query(User).filter_by(
-                        mastodon_user=session['mastodon']['username']
+                        mastodon_access_code=session['mastodon']['access_code']
                 ).first()
+
                 post.user_id = user.id
                 db.session.add(post)
                 db.session.commit()
@@ -211,18 +211,21 @@ def mastodon_oauthorized():
         api.access_code = access_code
 
         try:
-            session['mastodon'] = {
-                'host': host,
-                'access_code': access_code,
-                'username': api.account_verify_credentials()["username"]
-            }
+            creds = api.account_verify_credentials()
 
         except MastodonUnauthorizedError as e:
             flash(f"There was a problem connecting to the mastodon server. The error was {e}")
             return redirect(url_for('community'))
 
+        session['mastodon'] = {
+            'host': host,
+            'access_code': access_code,
+            'username': creds["username"],
+            'user_id': creds["id"]
+        }
+
         user = db.session.query(User).filter_by(
-                mastodon_user=session['mastodon']['username']
+                mastodon_access_code=session['mastodon']['access_code']
         ).first()
 
         if user:
@@ -261,7 +264,7 @@ def delete():
     if 'twitter' in session and 'mastodon' in session:
         # look up settings
         user = db.session.query(User).filter_by(
-                mastodon_user=session['mastodon']['username'],
+                mastodon_access_code=session['mastodon']['access_code']
         ).first()
 
         if user:
@@ -279,6 +282,7 @@ def delete():
 def logout():
     session.pop('mastodon', None)
     return redirect(url_for('community'))
+
 
 @app.route('/privacy')
 def privacy():
