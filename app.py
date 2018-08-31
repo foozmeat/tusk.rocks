@@ -97,6 +97,10 @@ def post():
                         mastodon_access_code=session['mastodon']['access_code']
                 ).first()
 
+                if not user:
+                    flash("An error occurred. User not found")
+                    return redirect(url_for('post'))
+
                 post.user_id = user.id
                 db.session.add(post)
                 db.session.commit()
