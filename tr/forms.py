@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, Email, length, url
 
 
 class MastodonIDForm(FlaskForm):
-    mastodon_id = StringField('Sign in with', validators=[DataRequired(), Email()])
+    mastodon_id = StringField('Sign in with', validators=[DataRequired()])
 
 
 class SubmissionForm(FlaskForm):
