@@ -290,7 +290,8 @@ def logout():
 
 @app.route('/privacy')
 def privacy():
-    return render_template('privacy.html.j2')
+    return render_template('privacy.html.j2',
+                           app=app)
 
 
 if __name__ == '__main__':
