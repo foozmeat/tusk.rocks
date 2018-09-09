@@ -19,7 +19,14 @@
 <div class="center">
     <p>(this is hella alpha)</p>
 
-    <p><a href="{{ url_for('post') }}">Post</a> | <a href="{{ url_for('community') }}">Community</a></p>
+    <p>
+        <a href="{{ url_for('index') }}">Community</a>
+        | <a href="{{ url_for('post') }}">Post</a>
+        {% if session.mastodon %}
+            | <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+
+    </p>
 
     <p id="cookiecheck" class="message" style="display: none;">Please allow cookies for this site or it won't work
         properly.</p>

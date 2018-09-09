@@ -1,6 +1,6 @@
-{% if g.m_user %}
-    <p>Mastodon: <strong>{{ g.m_user.username }}@{{ g.m_user.host }}</strong></p>
-    <div class="login-button"><a href="{{ url_for('logout') }}">Logout</a></div>
+{% if session.mastodon %}
+    <p><strong>{{ session.mastodon.username }}@{{ session.mastodon.host }}</strong></p>
+
 {% else %}
     <div class="login-button">
         <a href="{{ url_for('mastodon_login') }}">Connect your Mastodon Account</a>

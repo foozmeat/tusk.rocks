@@ -106,3 +106,4 @@ venv.bak/
 /sr.db
 /.idea
 /tr.db
+logs/*

@@ -2,7 +2,7 @@
 {% block body %}
     {% include 'masto_auth.html.j2' %}
 
-    {% if g.m_user %}
+    {% if session.mastodon %}
         <form method="POST" action="{{ url_for('post') }}">
             <div class="input-group">
                 <div>{{ sform.comment.label }}</div>

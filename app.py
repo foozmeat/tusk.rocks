@@ -45,21 +45,17 @@ db.init_app(app)
 
 @app.before_request
 def before_request():
-    g.m_user = None
-
-    if 'mastodon' in session:
-        g.m_user = session['mastodon']
 
     try:
         db.engine.execute('SELECT 1 from users')
     except exc.SQLAlchemyError as e:
         return f"Song Delivery is unavailable at the moment: {e}", 503
 
-    app.logger.info(session)
+    app.logger.debug(session)
 
 
-@app.route('/community', methods=["GET", "POST"])
-def community():
+@app.route('/', methods=["GET", "POST"])
+def index():
     # if request.form["task"] == 'Preview':
 
     posts = db.session.query(Post).order_by(Post.updated.desc()).filter_by(posted=True).limit(10)
@@ -104,7 +100,7 @@ def post():
                 post.user_id = user.id
                 db.session.add(post)
                 db.session.commit()
-                flash(f"Post created")
+                flash(f"Thank you! Your post will appear soon.")
 
                 if app.config.get('MAIL_SERVER', None):
 
@@ -122,7 +118,7 @@ def post():
                     except Exception as e:
                         app.logger.error(e)
 
-                return redirect(url_for('community'))
+                return redirect(url_for('index'))
 
         else:
             for e in sform.errors.items():
@@ -146,7 +142,7 @@ def mastodon_login():
 
         if "@" not in user_id:
             flash('Invalid Mastodon ID')
-            return redirect(url_for('community'))
+            return redirect(url_for('index'))
 
         if user_id[0] == '@':
             user_id = user_id[1:]
@@ -176,7 +172,7 @@ def mastodon_login():
     elif request.method == 'POST':
         flash("Invalid Mastodon ID")
 
-    return redirect(url_for('community'))
+    return redirect(url_for('index'))
 
 
 @app.route('/mastodon_oauthorized')
@@ -193,7 +189,7 @@ def mastodon_oauthorized():
 
         if not host:
             flash('There was an error. Please ensure you allow this site to use cookies.')
-            return redirect(url_for('community'))
+            return redirect(url_for('index'))
 
         session.pop('mastodon_host', None)
 
@@ -208,7 +204,7 @@ def mastodon_oauthorized():
         except MastodonIllegalArgumentError as e:
 
             flash(f"There was a problem connecting to the mastodon server. The error was {e}")
-            return redirect(url_for('community'))
+            return redirect(url_for('index'))
 
         # app.logger.info(f"Access code {access_code}")
 
@@ -219,7 +215,7 @@ def mastodon_oauthorized():
 
         except MastodonUnauthorizedError as e:
             flash(f"There was a problem connecting to the mastodon server. The error was {e}")
-            return redirect(url_for('community'))
+            return redirect(url_for('index'))
 
         session['mastodon'] = {
             'host': host,
@@ -234,6 +230,8 @@ def mastodon_oauthorized():
 
         if user:
             app.logger.debug("Existing settings found")
+            session['user_id'] = user.id
+
         else:
 
             user = User()
@@ -260,7 +258,7 @@ def mastodon_oauthorized():
                 except Exception as e:
                     app.logger.error(e)
 
-    return redirect(url_for('community'))
+    return redirect(url_for('index'))
 
 
 @app.route('/delete', methods=["POST"])
@@ -282,10 +280,34 @@ def delete():
     return redirect(url_for('logout'))
 
 
+@app.route('/delete_post/<post_id>', methods=["GET"])
+def delete_post(post_id):
+
+    post = db.session.query(Post).filter_by(id=post_id).first()
+
+    if not post:
+        flash("No post found")
+        return redirect(url_for('index'))
+
+    user = db.session.query(User).filter_by(
+            mastodon_access_code=session['mastodon']['access_code']
+    ).first()
+
+    if post.user_id != user.id:
+        flash("Permission Denied")
+        return redirect(url_for('index'))
+
+    db.session.delete(post)
+    db.session.commit()
+
+    flash("Deleted")
+    return redirect(url_for('index'))
+
+
 @app.route('/logout', methods=["GET", "POST"])
 def logout():
     session.pop('mastodon', None)
-    return redirect(url_for('community'))
+    return redirect(url_for('index'))
 
 
 @app.route('/privacy')
