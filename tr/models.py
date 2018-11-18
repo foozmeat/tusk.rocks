@@ -69,8 +69,18 @@ class Post(Base):
             return False
 
     @property
+    def share_link_is_bandcamp(self):
+        pattern = re.compile("^https://.*bandcamp.com/")
+        if pattern.search(self.share_link):
+            return True
+        else:
+            return False
+
+    @property
     def song_link(self):
         if self.share_link_is_song_link:
+            return self.share_link
+        if self.share_link_is_bandcamp:
             return self.share_link
         else:
             return f"https://song.link/{self.share_link}"
