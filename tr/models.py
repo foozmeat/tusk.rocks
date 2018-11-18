@@ -3,6 +3,7 @@ import re
 from datetime import datetime, timedelta
 
 import requests
+from flask import render_template
 from metadata_parser import MetadataParser
 from requests import Request
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, MetaData, String
@@ -46,6 +47,9 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
     comment = Column(String(500), nullable=False)
+    title = Column(String(100), nullable=True)
+    album_art = Column(String(200), nullable=True)
+
     share_link = Column(String(400), nullable=False)
     posted = Column(Boolean, nullable=False, default=False)
     toot_visibility = Column(String(40), nullable=True)
@@ -54,8 +58,6 @@ class Post(Base):
     created = Column(DateTime, default=datetime.utcnow)
     updated = Column(DateTime)
 
-    oembed_fetched = False
-    __oembed = None
     md = None
 
     @property
@@ -73,57 +75,24 @@ class Post(Base):
         else:
             return f"https://song.link/{self.share_link}"
 
-    def validate_song_link(self):
+    def fetch_metadata(self) -> None:
 
-        req = Request('GET', self.song_link, headers={'User-Agent': 'curl/7.54.0'})
-        prepped = req.prepare()
-        s = requests.Session()
-        r = s.send(prepped)
+        if self.album_art or self.title:
+            return
 
-        if r.status_code == 200:
-            self.share_link = r.url
-            # pp.pprint(r.text)
+        if not self.md:
+            req = Request('GET', self.song_link, headers={'User-Agent': 'curl/7.54.0'})
+            prepped = req.prepare()
+            s = requests.Session()
+            r = s.send(prepped)
 
-            mp = MetadataParser(html=r.text, search_head_only=True)
-            self.md = mp.metadata
-            # pp.pprint(mp.metadata)
+            if r.status_code == 200:
+                self.share_link = r.url
 
-    def oembed(self):
-        if not self.oembed_fetched:
-            if self.share_link_is_song_link:
-                url = f"https://song.link/oembed?url={self.share_link}&format=json"
-
-                req = Request('GET',
-                              url,
-                              headers={'User-Agent': 'curl/7.54.0'})
-                prepped = req.prepare()
-                s = requests.Session()
-                r = s.send(prepped)
-
-                try:
-                    self.__oembed = r.json()
-                    self.oembed_fetched = True
-                except ValueError:
-                    return None
-            else:
-                return None
-
-        return self.__oembed
-
-    def thumbnail_url(self):
-        self.validate_song_link()
-        if self.md:
-            return self.md['meta']['og:image']
-        else:
-            return None
-
-    def preview_content(self):
-        oembed = self.oembed()
-
-        if oembed:
-            return oembed['html']
-        else:
-            return "<p>Hmmm we couldn't find a preview for that</p>"
+                mp = MetadataParser(html=r.text, search_head_only=True)
+                self.md = mp.metadata
+                self.title = self.md['og']['title']
+                self.album_art = self.md['og']['image']
 
     @property
     def post_link(self):
@@ -132,6 +101,16 @@ class Post(Base):
             return output
         else:
             return None
+
+    def preview_content(self):
+        self.fetch_metadata()
+        p_text = render_template('_post_preview.html.j2',
+                                 link=self.song_link,
+                                 title=self.title,
+                                 thumbnail_url=self.album_art
+                                 )
+
+        return p_text
 
 
 class User(Base):

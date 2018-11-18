@@ -83,7 +83,6 @@ def post():
 
             if request.form["task"] == 'Preview':
 
-                post.validate_song_link()
                 sform.share_link.data = post.share_link
                 preview_data = post.preview_content()
                 is_preview = True

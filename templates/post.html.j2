@@ -9,6 +9,12 @@
                 <div>{{ sform.comment(size=500) }}</div>
             </div>
 
+            {% if is_preview %}
+                <div class="preview">
+                    {{ preview_data }}
+                </div>
+            {% endif %}
+
             <div class="input-group">
                 <div>{{ sform.toot_visibility.label }}</div>
                 <div>{{ sform.toot_visibility }}</div>
@@ -18,13 +24,6 @@
                 <div>{{ sform.share_link.label }}</div>
                 <div>{{ sform.share_link(placeholder="Plug in any kind of streaming link you like", size=50) }}</div>
             </div>
-
-            {% if is_preview %}
-                <div class="preview">
-                    <div>Preview</div>
-                    {{ preview_data }}
-                </div>
-            {% endif %}
 
             <input type="submit" name="task" value="Preview">
             {% if is_preview %}

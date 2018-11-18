@@ -53,7 +53,6 @@ iframe {
 .preview {
     margin: auto;
     width: 400px;
-    height: 220px;
 }
 
 .input-group {
@@ -69,4 +68,8 @@ iframe {
     border-bottom: 1px solid black;
     margin: 10px 0 10px 0;
     text-align: left;
+}
+
+.preview_image {
+    max-width: 200px;
 }

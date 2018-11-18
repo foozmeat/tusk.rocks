@@ -123,10 +123,9 @@ for post in posts:
 
     l.info(f"{user.mastodon_user}")
 
-    attachment_url = post.thumbnail_url()
+    attachment_url = post.thumbnail_url
 
     if c.SEND and attachment_url:
-        l.debug(post.oembed())
         l.info(f"Downloading {attachment_url}")
         attachment_file = requests.get(attachment_url, stream=True)
         attachment_file.raw.decode_content = True
@@ -157,7 +156,11 @@ for post in posts:
             session.commit()
             continue
 
-    message_to_post = f"{post.comment}\n\n{post.share_link}"
+    message_to_post = f"{post.comment}\n"
+    if post.media_title:
+        message_to_post += f"\n{post.media_title}"
+
+    message_to_post += f"\n{post.share_link}"
     vis = 'public'
     if post.toot_visibility:
         vis = post.toot_visibility
