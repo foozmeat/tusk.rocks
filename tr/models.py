@@ -112,7 +112,12 @@ class Post(Base):
                 mp = MetadataParser(html=r.text, search_head_only=True)
                 self.md = mp.metadata
                 self.title = self.md['og']['title']
-                self.album_art = self.md['og']['image']
+                image_link = self.md['og']['image']
+
+                if image_link[0:5] == 'http:':
+                    image_link = 'https:' + image_link[5:]
+
+                self.album_art = image_link
 
     @property
     def post_link(self):
