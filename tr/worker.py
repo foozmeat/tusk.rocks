@@ -7,10 +7,10 @@ import sys
 import tempfile
 import time
 from datetime import datetime
-from os.path import splitext
 from pathlib import Path
 from urllib.parse import urlparse
 
+import psutil
 import requests
 from mastodon import Mastodon, MastodonAPIError, MastodonNetworkError
 from sqlalchemy import create_engine, exc, func
@@ -70,6 +70,30 @@ except exc.SQLAlchemyError as e:
 session = Session(engine)
 
 check_worker_stop()
+
+lockfile = Path(f'worker_{args.worker}.lock')
+
+if Path(lockfile).exists():
+    l.info("Worker lock found")
+    with lockfile.open() as f:
+        pid = f.readline()
+        try:
+            pid = int(pid)
+        except ValueError:
+            l.info("Corrupt lock file found")
+            lockfile.unlink()
+
+        else:
+            if pid in psutil.pids():
+                l.info("Worker process still running...exiting")
+                session.commit()
+                session.close()
+                exit(0)
+            else:
+                l.info("Stale Worker found")
+
+with lockfile.open('wt') as f:
+    f.write(str(psutil.Process().pid))
 
 posts = session.query(Post).filter_by(posted=False)
 s = requests.Session()
@@ -166,3 +190,5 @@ for post in posts:
     check_worker_stop()
 
 l.info(f"-- All done")
+
+lockfile.unlink()
