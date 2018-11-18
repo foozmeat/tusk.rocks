@@ -123,17 +123,15 @@ for post in posts:
 
     l.info(f"{user.mastodon_user}")
 
-    attachment_url = post.thumbnail_url
-
-    if c.SEND and attachment_url:
-        l.info(f"Downloading {attachment_url}")
-        attachment_file = requests.get(attachment_url, stream=True)
+    if c.SEND and post.album_art:
+        l.info(f"Downloading {post.album_art}")
+        attachment_file = requests.get(post.album_art, stream=True)
         attachment_file.raw.decode_content = True
         temp_file = tempfile.NamedTemporaryFile(delete=False)
         temp_file.write(attachment_file.raw.read())
         temp_file.close()
 
-        path = urlparse(attachment_url).path
+        path = urlparse(post.album_art).path
         file_extension = mimetypes.guess_extension(attachment_file.headers['Content-type'])
 
         # ffs
@@ -157,8 +155,8 @@ for post in posts:
             continue
 
     message_to_post = f"{post.comment}\n"
-    if post.media_title:
-        message_to_post += f"\n{post.media_title}"
+    if post.title:
+        message_to_post += f"\n{post.title}"
 
     message_to_post += f"\n{post.share_link}"
     vis = 'public'
