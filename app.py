@@ -56,9 +56,12 @@ def before_request():
 
 @app.route('/', methods=["GET", "POST"])
 def index():
-    # if request.form["task"] == 'Preview':
 
-    posts = db.session.query(Post).order_by(Post.updated.desc()).filter_by(posted=True).limit(10)
+    posts = db.session.query(Post).order_by(Post.updated.desc()).filter_by(posted=True)
+
+    for p in posts:
+        p.fetch_metadata()
+        db.session.commit()
 
     return render_template('community.html.j2',
                            app=app,
