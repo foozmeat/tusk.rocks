@@ -85,7 +85,7 @@ def post():
             sform.populate_obj(post)
 
             if request.form["task"] == 'Preview':
-
+                post.fetch_metadata()
                 sform.share_link.data = post.share_link
                 preview_data = post.preview_content()
                 is_preview = True
@@ -100,6 +100,7 @@ def post():
                     return redirect(url_for('post'))
 
                 post.user_id = user.id
+                post.fetch_metadata()
                 db.session.add(post)
                 db.session.commit()
                 flash(f"Thank you! Your post will appear soon.")
