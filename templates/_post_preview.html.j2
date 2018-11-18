@@ -1,6 +1,12 @@
 <div class="preview">
 <a target="_new" href="{{ link }}">
+{% if title %}
 <p class="preview_title">{{ title }}</p>
+{% else %}
+<p class="preview_title">{{ link }}</p>
+{% endif %}
+{% if thumbnail_url %}
 <div><img class="preview_image" src="{{ thumbnail_url }}"></div>
+{% endif %}
 </a>
 </div>
