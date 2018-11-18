@@ -1,7 +1,7 @@
+import math
 import pprint as pp
 import re
 from datetime import datetime, timedelta
-
 import requests
 from flask import render_template
 from metadata_parser import MetadataParser
@@ -137,6 +137,10 @@ class Post(Base):
 
         return p_text
 
+    @property
+    def relative_date(self) -> str:
+        return reltime(self.created)
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -159,3 +163,69 @@ class User(Base):
     def profile_link(self):
         url = f"https://{self.mastodon_host.hostname}/@{self.mastodon_user}"
         return url
+
+
+def reltime(date, compare_to=None, at='@') -> str:
+    """
+    Modified From https://gist.githubusercontent.com/deontologician/3503910/raw/bf46f646d79bd6d3cb29fcf23be5a72a6a92c185/reltime.py
+    """
+
+    def ordinal(n):
+        r"""Returns a string ordinal representation of a number
+        Taken from: http://stackoverflow.com/a/739301/180718
+        """
+        if 10 <= n % 100 < 20:
+            return str(n) + 'th'
+        else:
+            return str(n) + {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, "th")
+
+    compare_to = compare_to or datetime.utcnow()
+    if date > compare_to:
+        raise NotImplementedError('reltime only handles dates in the past')
+    # get timediff values
+    diff = compare_to - date
+    if diff.seconds < 60 * 60 * 8:  # less than a business day?
+        days_ago = diff.days
+    else:
+        days_ago = diff.days + 1
+    months_ago = compare_to.month - date.month
+    years_ago = compare_to.year - date.year
+    weeks_ago = int(math.ceil(days_ago / 7.0))
+    # get a non-zero padded 12-hour hour
+    hr = date.strftime('%I')
+    if hr.startswith('0'):
+        hr = hr[1:]
+    wd = compare_to.weekday()
+    # calculate the time string
+    if date.minute == 0:
+        time = '{0}{1}'.format(hr, date.strftime('%p').lower())
+    else:
+        time = '{0}:{1}'.format(hr, date.strftime('%M%p').lower())
+    # calculate the date string
+    if days_ago == 0:
+        datestr = 'today'
+    elif days_ago == 1:
+        datestr = 'yesterday'
+    elif days_ago > 6 and months_ago == 0:
+        datestr = '{weeks_ago} weeks ago'
+    # elif (wd in (5, 6) and days_ago in (wd + 1, wd + 2)) or \
+    #         wd + 3 <= days_ago <= wd + 8:
+    #     # this was determined by making a table of wd versus days_ago and
+    #     # divining a relationship based on everyday speech. This is somewhat
+    #     # subjective I guess!
+    #     datestr = '{days_ago} days ago'
+    elif days_ago <= wd + 2:
+        datestr = '{days_ago} days ago'
+    else:
+        datestr = '{month} {day}, {year}'
+    return datestr.format(time=time,
+                          weekday=date.strftime('%A'),
+                          day=ordinal(date.day),
+                          days=diff.days,
+                          days_ago=days_ago,
+                          month=date.strftime('%B'),
+                          years_ago=years_ago,
+                          months_ago=months_ago,
+                          weeks_ago=weeks_ago,
+                          year=date.year,
+                          at=at)
