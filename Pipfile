@@ -15,6 +15,7 @@ raven = {version = "*", extras = ["flask"]}
 flask-wtf = "*"
 metadata-parser = "*"
 lxml = "*"
+psutil = "*"
 
 [dev-packages]
 
