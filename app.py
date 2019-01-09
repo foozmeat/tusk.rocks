@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 
 from flask import Flask, flash, g, redirect, render_template, request, session, url_for
@@ -220,28 +221,51 @@ def mastodon_oauthorized():
             flash(f"There was a problem connecting to the mastodon server. The error was {e}")
             return redirect(url_for('index'))
 
+        mastodon_host = get_or_create_host(db, app, host)
+
         session['mastodon'] = {
             'host': host,
-            'access_code': access_code,
+            # 'access_code': access_code,
             'username': creds["username"],
             'user_id': creds["id"]
         }
 
+        # first look up by account id
         user = db.session.query(User).filter_by(
-                mastodon_access_code=session['mastodon']['access_code']
+                mastodon_account_id=creds["id"],
+                mastodon_host_id=mastodon_host.id
         ).first()
+
+        if not user:
+            # fall back to looking up by username
+            user = db.session.query(User).filter_by(
+                    mastodon_user=creds["username"],
+                    mastodon_host_id=mastodon_host.id
+            ).first()
 
         if user:
             app.logger.debug("Existing settings found")
             session['user_id'] = user.id
 
+            if user.mastodon_access_code != access_code:
+                user.mastodon_access_code = access_code
+                user.updated = datetime.now()
+                db.session.commit()
+
+            if user.mastodon_account_id == 0:
+                user.mastodon_account_id = creds["id"]
+                user.updated = datetime.now()
+                db.session.commit()
+
         else:
 
             user = User()
             user.settings = Settings()
-            user.mastodon_access_code = session['mastodon']['access_code']
-            user.mastodon_user = session['mastodon']['username']
-            user.mastodon_host = get_or_create_host(db, app, session['mastodon']['host'])
+            user.mastodon_access_code = access_code
+            user.mastodon_user = creds["username"]
+            user.mastodon_host = mastodon_host
+            user.mastodon_account_id = creds["id"]
+            user.updated = datetime.now()
 
             db.session.add(user.settings)
             db.session.add(user)
