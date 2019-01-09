@@ -12,7 +12,6 @@ from urllib.parse import urlparse
 
 import psutil
 import requests
-from flask import render_template
 from mastodon import Mastodon, MastodonAPIError, MastodonNetworkError
 from sqlalchemy import create_engine, exc, func
 from sqlalchemy.orm import Session
@@ -102,9 +101,26 @@ s = requests.Session()
 # if not c.DEVELOPMENT:
 #     posts = posts.order_by(func.rand())
 
+for post in posts:
 
-def post_update_to_mastodon(api, post):
+    user = post.user
+    mastodonhost = user.mastodon_host
+
+    if mastodonhost.defer_until and mastodonhost.defer_until > datetime.now():
+        l.warning(f"Deferring connections to {mastodonhost.hostname}")
+        continue
+
     media_ids = []
+
+    mast_api = Mastodon(
+            client_id=mastodonhost.client_id,
+            client_secret=mastodonhost.client_secret,
+            api_base_url=f"https://{mastodonhost.hostname}",
+            access_token=user.mastodon_access_code,
+            debug_requests=False,
+            request_timeout=10
+    )
+
     l.info(f"{user.mastodon_user}")
 
     if c.SEND and post.album_art:
@@ -115,7 +131,7 @@ def post_update_to_mastodon(api, post):
         temp_file.write(attachment_file.raw.read())
         temp_file.close()
 
-        # path = urlparse(post.album_art).path
+        path = urlparse(post.album_art).path
         file_extension = mimetypes.guess_extension(attachment_file.headers['Content-type'])
 
         # ffs
@@ -127,76 +143,63 @@ def post_update_to_mastodon(api, post):
         l.debug(f'Uploading {upload_file_name}')
 
         try:
-            media_ids.append(api.media_post(upload_file_name))
+            media_ids.append(mast_api.media_post(upload_file_name))
         except MastodonAPIError as e:
             l.error(e)
-            return
+            continue
 
         except MastodonNetworkError as e:
             l.error(e)
             mastodonhost.defer()
             session.commit()
-            return
+            continue
 
-    message = render_template('masto_post.j2', post=post)
-    l.info(message)
+    message_to_post = f"{post.comment}\n"
+    if post.title:
+        message_to_post += f"\n{post.title}"
 
+    message_to_post += f"\n{post.share_link}"
     vis = 'public'
     if post.toot_visibility:
         vis = post.toot_visibility
 
+    l.info(message_to_post)
+
     if c.SEND:
         try:
-            new_message = api.status_post(
-                    message,
+            new_message = mast_api.status_post(
+                    message_to_post,
                     visibility=vis,
                     media_ids=media_ids)
 
         except MastodonAPIError as e:
             l.error(e)
+            continue
 
         except MastodonNetworkError as e:
             l.error(e)
             mastodonhost.defer()
             session.commit()
+            continue
+
         else:
             post.updated = datetime.now()
             post.status_id = new_message["id"]
             post.posted = True
+
+            if c.ACCOUNT_ACCESS_TOKEN:
+                tusk_poster_api = Mastodon(
+                        client_id=c.ACCOUNT_CLIENT_ID,
+                        client_secret=c.ACCOUNT_CLIENT_SECRET,
+                        api_base_url=c.ACCOUNT_BASE_URL,
+                        access_token=c.ACCOUNT_ACCESS_TOKEN,
+                        debug_requests=False,
+                        request_timeout=10
+                )
+
+                tusk_poster_api.status_reblog(new_message)
+
             session.commit()
-
-
-for post in posts:
-
-    user = post.user
-    mastodonhost = user.mastodon_host
-
-    if mastodonhost.defer_until and mastodonhost.defer_until > datetime.now():
-        l.warning(f"Deferring connections to {mastodonhost.hostname}")
-        continue
-
-    api = Mastodon(
-            client_id=mastodonhost.client_id,
-            client_secret=mastodonhost.client_secret,
-            api_base_url=f"https://{mastodonhost.hostname}",
-            access_token=user.mastodon_access_code,
-            debug_requests=False,
-            request_timeout=10
-    )
-
-    post_update_to_mastodon(api, post)
-
-    if config.ACCOUNT_ACCESS_TOKEN:
-        tusk_poster_api = Mastodon(
-                client_id=config.ACCOUNT_CLIENT_ID,
-                client_secret=config.ACCOUNT_CLIENT_SECRET,
-                api_base_url=config.ACCOUNT_BASE_URL,
-                access_token=config.ACCOUNT_ACCESS_TOKEN,
-                debug_requests=False,
-                request_timeout=10
-        )
-
-        post_update_to_mastodon(tusk_poster_api, post)
 
     check_worker_stop()
 
