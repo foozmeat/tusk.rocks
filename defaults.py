@@ -21,3 +21,7 @@ class DefaultConfig(object):
     WORKER_JOBS = 1
     MAINTENANCE_MODE = False
     DEVELOPMENT = False
+    ACCOUNT_ACCESS_TOKEN = None
+    ACCOUNT_CLIENT_ID = None
+    ACCOUNT_CLIENT_SECRET = None
+    ACCOUNT_BASE_URL = None
