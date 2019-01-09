@@ -93,7 +93,7 @@ def post():
 
             elif request.form["task"] == 'Send':
                 user = db.session.query(User).filter_by(
-                        mastodon_access_code=session['mastodon']['access_code']
+                        id=session['user_id']
                 ).first()
 
                 if not user:
