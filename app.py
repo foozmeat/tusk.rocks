@@ -271,6 +271,8 @@ def mastodon_oauthorized():
             db.session.add(user)
             db.session.commit()
 
+            session['user_id'] = user.id
+
             if app.config.get('MAIL_SERVER', None):
 
                 body = render_template('email/new_user_email.txt.j2',
