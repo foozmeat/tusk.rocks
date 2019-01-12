@@ -154,11 +154,8 @@ for post in posts:
             session.commit()
             continue
 
-    message_to_post = f"{post.comment}\n"
-    if post.title:
-        message_to_post += f"\n{post.title}"
+    message_to_post = f"{post.comment}\n\n{post.share_link}"
 
-    message_to_post += f"\n{post.share_link}"
     vis = 'public'
     if post.toot_visibility:
         vis = post.toot_visibility

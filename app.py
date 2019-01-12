@@ -91,6 +91,9 @@ def post():
                 preview_data = post.preview_content()
                 is_preview = True
 
+                if sform.comment.data == "":
+                    sform.comment.data = f"{post.title}\n\nsent from tusk.rocks 🐘🎸"
+
             elif request.form["task"] == 'Send':
                 user = db.session.query(User).filter_by(
                         id=session['user_id']
@@ -288,25 +291,6 @@ def mastodon_oauthorized():
                     app.logger.error(e)
 
     return redirect(url_for('index'))
-
-
-@app.route('/delete', methods=["POST"])
-def delete():
-    if 'twitter' in session and 'mastodon' in session:
-        # look up settings
-        user = db.session.query(User).filter_by(
-                mastodon_access_code=session['mastodon']['access_code']
-        ).first()
-
-        if user:
-            app.logger.info(
-                    f"Deleting settings for {session['mastodon']['username']}")
-            settings = user.settings
-            db.session.delete(user)
-            db.session.delete(settings)
-            db.session.commit()
-
-    return redirect(url_for('logout'))
 
 
 @app.route('/delete_post/<post_id>', methods=["GET"])

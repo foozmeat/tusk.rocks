@@ -4,10 +4,12 @@
 
     {% if session.mastodon %}
         <form method="POST" action="{{ url_for('post') }}">
+            {% if is_preview %}
             <div class="input-group">
                 <div>{{ sform.comment.label }}</div>
                 <div>{{ sform.comment(size=500) }}</div>
             </div>
+            {% endif %}
 
             {% if is_preview %}
                 <div class="preview">
@@ -16,13 +18,14 @@
             {% endif %}
 
             <div class="input-group">
-                <div>{{ sform.toot_visibility.label }}</div>
-                <div>{{ sform.toot_visibility }}</div>
-            </div>
-
-            <div class="input-group">
                 <div>{{ sform.share_link.label }}</div>
                 <div>{{ sform.share_link(placeholder="Plug in any kind of streaming link you like", size=50) }}</div>
+            </div>
+
+
+            <div class="input-group">
+                <div>{{ sform.toot_visibility.label }}</div>
+                <div>{{ sform.toot_visibility }}</div>
             </div>
 
             <input type="submit" name="task" value="Preview">
