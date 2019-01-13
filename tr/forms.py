@@ -9,7 +9,7 @@ class MastodonIDForm(FlaskForm):
 
 
 class SubmissionForm(FlaskForm):
-    comment = TextAreaField('Message', [length(max=500)])
+    comment = TextAreaField('What do you want to say?', [length(max=500)])
     share_link = URLField('Song/Album Link', [url()])
     toot_visibility = SelectField('Toot visibility', choices=[
         ('', 'Public'),

@@ -3,11 +3,18 @@
     {% include 'masto_auth.html.j2' %}
 
     {% if session.mastodon %}
+        <script>
+        function addText(event) {
+            var targ = event.target || event.srcElement;
+            document.getElementById("comment").value += " " + targ.textContent || targ.innerText;
+        }
+        </script>
         <form method="POST" action="{{ url_for('post') }}">
             {% if is_preview %}
                 <div class="input-group">
                     <div>{{ sform.comment.label }}</div>
                     <div>{{ sform.comment(size=500) }}</div>
+                    <button type="button" onclick="addText(event)">#nowplaying</button>
                 </div>
             {% endif %}
 

@@ -94,7 +94,7 @@ def post():
                 is_preview = True
 
                 if sform.comment.data == "":
-                    sform.comment.data = f'{post.title}\n\nSent from https://tusk.rocks 🐘🎸</a>'
+                    sform.comment.data = f'{post.title}\n\nSent from https://tusk.rocks 🐘🎸\n'
 
             elif request.form["task"] == 'Send':
                 user = db.session.query(User).filter_by(
