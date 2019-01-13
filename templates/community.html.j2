@@ -3,20 +3,26 @@
 
     {% include 'masto_auth.html.j2' %}
 
-    <p>Posts from the Community</p>
-
-    <div class="community_posts">
+    <div class="card-container">
         {% for post in posts %}
-            <div class="comm_post">
-                <div class="user">
-                    <div><a target=_new" href="{{ post.post_link }}">Posted {{ post.relative_date }}</a> by <a target=_new" href="{{ post.user.profile_link }}">{{ post.user.mastodon_user }}</a>
-                    {% if post.user_id == session.user_id %}
-                        • <a href="{{ url_for('delete_post', post_id=post.id) }}">Delete</a>
-                    {% endif %}
-                    </div>
+            <div class="blog-card card">
+                <div class="card-img-container">
+                    <a target="_blank" href="{{ post.song_link }}">
+                        <img class="card-img" src="{{ post.album_art }}">
+                    </a>
                 </div>
-                <p class="comment">{{ post.comment }}</p>
-                {{ post.preview_content() }}
+
+                <article class="card-body">
+                    <p class="card-text">{{ post.comment|nl2br }}</p>
+                    <div class="card-subtext muted-text">
+                        <div><a target=_new" href="{{ post.post_link }}">Posted {{ post.relative_date }}</a>
+                            by <a target=_new" href="{{ post.user.profile_link }}">{{ post.user.mastodon_user }}</a>
+                            {% if post.user_id == session.user_id %}
+                                • <a href="{{ url_for('delete_post', post_id=post.id) }}">Delete</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
             </div>
         {% endfor %}
     </div>

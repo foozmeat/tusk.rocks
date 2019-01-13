@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 
@@ -7,6 +8,7 @@ from flask import Flask, flash, g, redirect, render_template, request, session, 
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from markupsafe import Markup, escape
 from mastodon import MastodonIllegalArgumentError, MastodonUnauthorizedError
 from sqlalchemy import exc
 
@@ -79,6 +81,7 @@ def post():
     sform = SubmissionForm()
     preview_data = None
     is_preview = False
+    post = None
 
     if request.method == 'POST':
         if sform.validate_on_submit():
@@ -88,11 +91,10 @@ def post():
             if request.form["task"] == 'Preview':
                 post.fetch_metadata()
                 sform.share_link.data = post.share_link
-                preview_data = post.preview_content()
                 is_preview = True
 
                 if sform.comment.data == "":
-                    sform.comment.data = f"{post.title}\n\nsent from tusk.rocks 🐘🎸"
+                    sform.comment.data = f'{post.title}\n\nSent from https://tusk.rocks 🐘🎸</a>'
 
             elif request.form["task"] == 'Send':
                 user = db.session.query(User).filter_by(
@@ -134,7 +136,7 @@ def post():
     return render_template('post.html.j2',
                            sform=sform,
                            app=app,
-                           preview_data=preview_data,
+                           post=post,
                            is_preview=is_preview
                            )
 
@@ -327,6 +329,15 @@ def logout():
 def privacy():
     return render_template('privacy.html.j2',
                            app=app)
+
+
+@app.template_filter('nl2br')
+def nl2br(value):
+    _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
+
+    result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', Markup('<br>\n'))
+                          for p in _paragraph_re.split(escape(value)))
+    return result
 
 
 if __name__ == '__main__':

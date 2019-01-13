@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ app.config.get('SITE_NAME') }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
     <meta property="og:type" content="website"/>
     <meta property="og:url" content="{{ app.config.get('SITE_URL') }}"/>
@@ -17,12 +18,13 @@
 </head>
 <body>
 <div class="center">
+    <h1>🐘🎸</h1>
     <p>(this is hella alpha)</p>
 
     <p>
-        <a href="{{ url_for('index') }}">Community</a>
-        | <a href="{{ url_for('post') }}">Post</a>
+        <a href="{{ url_for('index') }}">Home</a>
         {% if session.mastodon %}
+            | <a href="{{ url_for('post') }}">Post</a>
             | <a href="{{ url_for('logout') }}">Logout</a>
         {% endif %}
 
@@ -34,14 +36,16 @@
     {% for message in get_flashed_messages() %}
         <p class=message>{{ message }}</p>
     {% endfor %}
-
+</div>
+<div>
     {% block body %}{% endblock %}
-
+</div>
+<div class="footer center">
     <p>Created by <a target="_new" href="https://pdx.social/@foozmeat">James Moore</a>.
-        Code available on <a target="_new" href="https://github.com/foozmeat/tusk.rocks">Github</a>.</p>
+        Code available on <a target="_new" href="https://github.com/foozmeat/tusk.rocks">Github</a>.
 {#    <p>Get Updates on <a href="https://pdx.social/@moa_party">Mastodon</a>.#}
-        <a href="{{ url_for('privacy') }}">Privacy Policy</a>.</p>
-
+        <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
+    </p>
     <p>Music metadata provided by <a href="https://song.link">Songlink</a></p>
 
 </div>

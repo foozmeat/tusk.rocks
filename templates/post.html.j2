@@ -5,15 +5,26 @@
     {% if session.mastodon %}
         <form method="POST" action="{{ url_for('post') }}">
             {% if is_preview %}
-            <div class="input-group">
-                <div>{{ sform.comment.label }}</div>
-                <div>{{ sform.comment(size=500) }}</div>
-            </div>
+                <div class="input-group">
+                    <div>{{ sform.comment.label }}</div>
+                    <div>{{ sform.comment(size=500) }}</div>
+                </div>
             {% endif %}
 
             {% if is_preview %}
                 <div class="preview">
-                    {{ preview_data }}
+                    <div class="center">
+                        <a target="_new" href="{{ post.song_link }}">
+                            {% if title %}
+                                <p class="preview_title">{{ post.title }}</p>
+                            {% else %}
+                                <p class="preview_title">{{ post.song_link }}</p>
+                            {% endif %}
+                            {% if post.album_art %}
+                                <img alt="{{ post.title }}" class="preview-img" src="{{ post.album_art }}">
+                            {% endif %}
+                        </a>
+                    </div>
                 </div>
             {% endif %}
 

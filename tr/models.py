@@ -127,16 +127,6 @@ class Post(Base):
         else:
             return None
 
-    def preview_content(self):
-        self.fetch_metadata()
-        p_text = render_template('_post_preview.html.j2',
-                                 link=self.song_link,
-                                 title=self.title,
-                                 thumbnail_url=self.album_art
-                                 )
-
-        return p_text
-
     @property
     def relative_date(self) -> str:
         return reltime(self.created)

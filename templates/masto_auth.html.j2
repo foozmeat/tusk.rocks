@@ -1,9 +1,9 @@
 {% if session.mastodon %}
-    <p><strong>{{ session.mastodon.username }}@{{ session.mastodon.host }}</strong></p>
+    <div class="center"><strong>{{ session.mastodon.username }}@{{ session.mastodon.host }}</strong></div>
 
 {% else %}
     <div class="login-button">
-        <a href="{{ url_for('mastodon_login') }}">Connect your Mastodon Account</a>
+        <a href="{{ url_for('mastodon_login') }}">Connect your Mastodon account to post</a>
     </div>
 {% endif %}
 <hr>

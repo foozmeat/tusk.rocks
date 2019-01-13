@@ -1,43 +1,36 @@
 body {
-    font-family: Monaco, monospace;
-    max-width: 600px;
-    text-align: center;
-    margin: auto;
+    font-family: Avenir, HelveticaNeue-Light, "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    color: #3A3B3C;
+    font-size: 1.1em;
+    background-color: #ecedef;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 input, select {
-    font-family: Monaco, monospace;
-
-}
-
-form {
-    /*display: inline;*/
+    font-family: Avenir, HelveticaNeue-Light, "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
 .center {
     text-align: center;
     margin: auto;
-    /*width: 400px;*/
-    border: 1px solid #555555;
 }
 
 textarea {
     width: 100%;
-    max-width: 400px;
-    height: 100px;
+    height: 200px;
 }
 
 .login-button {
-    border: 1px solid #555555;
     padding: 10px;
-    width:200px;
     margin: auto;
-    border-radius: 10px;
-}
+    text-align: center;
 
-iframe {
-    width: 400px;
-    height: 199px;
 }
 
 .message {
@@ -50,26 +43,261 @@ iframe {
     margin-right: 6px;
 }
 
-.preview {
-    margin: auto;
-    width: 400px;
-}
-
 .input-group {
     margin: 10px;
 }
 
-.community_posts {
-    width: 400px;
-    margin: auto;
-
-}
-.comm_post {
-    border-bottom: 1px solid black;
-    margin: 10px 0 10px 0;
-    text-align: left;
+.card-container {
+    max-width: 47rem;
 }
 
-.preview_image {
+.card {
+    display: block;
+    margin: 2.2rem 0;
+    box-sizing: border-box;
+    background-color: white;
+    text-decoration: none;
+    border-radius: 0.3rem;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    transition: transform 0.2s cubic-bezier(0.25,0.8,0.25,1), box-shadow 0.2s cubic-bezier(0.25,0.8,0.25,1);
+    box-shadow: 0 0.5rem 1rem 0 rgba(0,0,0,0.19), 0 0.3rem 0.3rem -0.1rem rgba(0,0,0,0.23);
+}
+
+.blog-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+.card-img-container {
+    position: relative;
+}
+.card-img {
+    border-radius: 0.3rem 0.3rem 0 0;
+    margin: 0 0 -0.28em 0;
+    object-fit: cover;
     max-width: 200px;
+}
+
+.preview-img {
+    border-radius: 0.3rem 0.3rem 0 0;
+    max-width: 200px;
+    text-align: center;
+    margin: auto;
+}
+
+.card-img-overlay {
+    border-radius: 0.3rem 0.3rem 0 0;
+    position: absolute;
+    top: 0;
+    font-size: 1.27em;
+    text-align: center;
+    padding: 1.18em 0 0.5em 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 5;
+}
+.card-body {
+    padding: 0.5em;
+}
+.card-title {
+    margin: 0;
+    line-height: 1.2;
+}
+.card-text {
+    margin: 1em 0;
+    line-height: 1.5;
+}
+.card-subtext {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    font-size: 0.8em;
+}
+.card-subtext > p {
+    margin: 0;
+}
+.card-subtext > p + p {
+    margin-left: 1em;
+    padding-left: 1em;
+    word-spacing: 0.5em;
+    border-left: thin solid #7A7B7C;
+}
+.end-nav {
+    width: 100%;
+    max-width: 49rem;
+}
+.pagination-nav {
+    margin: 2em 0;
+    width: 100%;
+    max-width: 47rem;
+}
+.pagination-newer {
+    float:left;
+}
+.pagination-older {
+    float: right;
+}
+.button {
+    padding: 0.5em 0.6em;
+    background-color: #FFF;
+    text-decoration: none;
+    border-radius: 0.3rem;
+    transition: transform 0.1s cubic-bezier(0.25,0.8,0.25,1), box-shadow 0.1s cubic-bezier(0.25,0.8,0.25,1);
+    box-shadow: 0 0.15rem 0.3rem rgba(0,0,0,0.16), 0 0.15rem 0.3rem rgba(0,0,0,0.23);
+}
+.button:hover {
+    box-shadow: 0 0.05rem 0.15rem rgba(0,0,0,0.12), 0 0.05rem 0.1rem rgba(0,0,0,0.24);
+    transform: scale(0.99);
+}
+.button:active {
+    transform: scale(1);
+}
+.side-gutter {
+    margin-left: 1.2rem !important;
+    margin-right: 1.2rem !important;
+}
+.side-padding {
+    padding-left: 1.2rem !important;
+    padding-right: 1.2rem !important;
+    box-sizing: border-box !important;
+}
+.side-text-padding {
+    padding-left: 1.2rem !important;
+    padding-right: 1.2rem !important;
+    box-sizing: border-box !important;
+}
+.small-img {
+    width: unset;
+    max-width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+}
+.muted-text {
+    color: #7A7B7C;
+}
+.katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+.no-scroll {
+    overflow: hidden;
+    position: fixed;
+}
+h1, h2, h3, h4, h5, h6 {
+    margin: 0.5em 0 0.5em 0;
+}
+img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 1.5em 0;
+}
+blockquote {
+    border-left: 0.3em solid #D1D1D1;
+    margin: 1.5em 0.8em;
+    padding: .5em 0.5em;
+    font-style: italic;
+}
+blockquote p {
+    display: inline;
+}
+ul,
+ol {
+    padding-left: 1.6em;
+}
+li ul, li ol {
+    padding-left: 1em;
+}
+li > p {
+    margin: 0;
+}
+code {
+    font-family: monospace;
+    padding: .2em .5em;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+    background-color: #f3f3f3;
+}
+hr {
+    border: 0;
+    border-bottom: thin solid #D1D1D1;
+    margin: 3em 0;
+}
+a {
+    color: #3A3B3C;
+}
+
+footer {
+    padding: 1em 0;
+}
+
+/* Medium devices (tablets, ~641px and up) */
+@media only screen and (min-width: 40.063em) {
+    body {
+        font-size: 1.125rem;
+    }
+    .nav-bar {
+        padding: 0.8em 0;
+    }
+    .list-header-title {
+        font-weight: normal;
+        font-size: 4.2em;
+    }
+    .card {
+        border-radius: 0.2rem;
+        /* margin: 2.5em 0; */
+    }
+    .blog-card {
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .card-img {
+        border-radius: 0.2rem 0 0 0.2rem;
+        margin: 0;
+        /*max-height: unset;*/
+        /*height: 100%;*/
+        width: 15em;
+    }
+    .card-img-overlay {
+        border-radius: 0.2rem 0 0 0;
+    }
+    .card-body {
+        padding: 0.5em 1.0em;
+    }
+    .card-title {
+        font-size: 1.27em;
+    }
+    .card-text {
+        font-size: 0.95em;
+        margin: 1.2em 0;
+    }
+    .card-subtext {
+        font-size: 0.7em;
+    }
+    .content {
+        border-radius: 0.2rem;
+    }
+    .post {
+        margin: 1em 1em 2em 1em;
+    }
+    .post-title {
+        font-size: 2.5em;
+    }
+    .button {
+        border-radius: 0.2rem;
+    }
+    .smartfloat-right {
+        float: right;
+        margin-left: 1em;
+    }
+    .smartfloat-left {
+        float: left;
+        margin-right: 1em;
+    }
+    code {
+        border-radius: 0.2rem;
+    }
 }
