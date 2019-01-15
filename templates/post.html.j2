@@ -18,6 +18,11 @@
                 </div>
             {% endif %}
 
+            <div class="input-group">
+                <div>{{ sform.share_link.label }}</div>
+                <div>{{ sform.share_link(placeholder="Plug in any kind of streaming link you like", size=50) }}</div>
+            </div>
+
             {% if is_preview %}
                 <div class="preview">
                     <div class="center">
@@ -34,11 +39,6 @@
                     </div>
                 </div>
             {% endif %}
-
-            <div class="input-group">
-                <div>{{ sform.share_link.label }}</div>
-                <div>{{ sform.share_link(placeholder="Plug in any kind of streaming link you like", size=50) }}</div>
-            </div>
 
 
             <div class="input-group">
