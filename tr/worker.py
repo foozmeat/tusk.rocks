@@ -183,6 +183,7 @@ for post in posts:
             post.updated = datetime.now()
             post.status_id = new_message["id"]
             post.posted = True
+            session.commit()
 
             if c.ACCOUNT_ACCESS_TOKEN:
                 tusk_poster_api = Mastodon(
@@ -194,9 +195,10 @@ for post in posts:
                         request_timeout=10
                 )
 
-                tusk_poster_api.status_reblog(new_message)
-
-            session.commit()
+                try:
+                    tusk_poster_api.status_reblog(new_message)
+                except MastodonAPIError as e:
+                    l.error(e)
 
     check_worker_stop()
 
