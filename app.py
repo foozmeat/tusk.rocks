@@ -72,14 +72,12 @@ def index():
                            )
 
 
-@app.route('/', methods=["GET", "POST"])
 @app.route('/post', methods=["GET", "POST"])
 def post():
     if app.config['MAINTENANCE_MODE']:
         return render_template('maintenance.html.j2')
 
     sform = SubmissionForm()
-    preview_data = None
     is_preview = False
     post = None
 
@@ -97,13 +95,20 @@ def post():
                     sform.comment.data = f'{post.title}\n\nSent from https://tusk.rocks 🐘🎸\n'
 
             elif request.form["task"] == 'Send':
-                user = db.session.query(User).filter_by(
-                        id=session['user_id']
-                ).first()
 
-                if not user:
-                    flash("An error occurred. User not found")
-                    return redirect(url_for('post'))
+                uid = session.get('user_id', None)
+
+                if uid:
+
+                    user = db.session.query(User).filter_by(id=uid).first()
+
+                    if not user:
+                        flash("An error occurred. User not found")
+                        return redirect(url_for('post'))
+                else:
+                    # For some reason sometimes user_id isn't set
+                    flash("An error occurred. Please log in again.")
+                    return redirect(url_for('logout'))
 
                 post.user_id = user.id
                 post.fetch_metadata()
@@ -230,9 +235,7 @@ def mastodon_oauthorized():
 
         session['mastodon'] = {
             'host': host,
-            # 'access_code': access_code,
             'username': creds["username"],
-            'user_id': creds["id"]
         }
 
         # first look up by account id
@@ -298,30 +301,32 @@ def mastodon_oauthorized():
 @app.route('/delete_post/<post_id>', methods=["GET"])
 def delete_post(post_id):
 
-    post = db.session.query(Post).filter_by(id=post_id).first()
+    post_to_delete = db.session.query(Post).filter_by(id=post_id).first()
 
-    if not post:
+    if not post_to_delete:
         flash("No post found")
         return redirect(url_for('index'))
 
-    user = db.session.query(User).filter_by(
-            mastodon_access_code=session['mastodon']['access_code']
-    ).first()
+    uid = session.get('user_id', None)
 
-    if post.user_id != user.id:
-        flash("Permission Denied")
-        return redirect(url_for('index'))
+    if uid:
+        user = db.session.query(User).filter_by(id=uid).first()
 
-    db.session.delete(post)
-    db.session.commit()
+        if post_to_delete.user_id != user.id:
+            flash("Permission Denied")
+            return redirect(url_for('index'))
 
-    flash("Deleted")
+        db.session.delete(post_to_delete)
+        db.session.commit()
+
+        flash("Deleted")
     return redirect(url_for('index'))
 
 
 @app.route('/logout', methods=["GET", "POST"])
 def logout():
     session.pop('mastodon', None)
+    session.pop('user_id', None)
     return redirect(url_for('index'))
 
 
