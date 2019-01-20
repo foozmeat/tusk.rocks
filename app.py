@@ -10,6 +10,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup, escape
 from mastodon import MastodonIllegalArgumentError, MastodonUnauthorizedError
+from pymysql import InternalError
 from sqlalchemy import exc
 
 from tr.forms import MastodonIDForm, SubmissionForm
@@ -27,7 +28,7 @@ logHandler = TimedRotatingFileHandler('logs/app.log', when='D', backupCount=7)
 logHandler.setFormatter(formatter)
 
 # set the log handler level
-logHandler.setLevel(logging.DEBUG)
+app.logger.setLevel(logging.INFO)
 app.logger.addHandler(logHandler)
 app.logger.info("Starting up...")
 
@@ -113,24 +114,30 @@ def post():
                 post.user_id = user.id
                 post.fetch_metadata()
                 db.session.add(post)
-                db.session.commit()
-                flash(f"Thank you! Your post will appear soon.")
+                try:
+                    db.session.commit()
+                except InternalError as e:
+                    app.logger.error(e)
 
-                if app.config.get('MAIL_SERVER', None):
+                    flash(f"Oh no, there was a problem posting this. We'll try to figure out the problem.")
+                else:
+                    flash(f"Thank you! Your post will appear soon.")
 
-                    body = render_template('email/new_post.txt.j2',
-                                           user=user,
-                                           post=post)
+                    if app.config.get('MAIL_SERVER', None):
 
-                    msg = Message(subject=f"New Post",
-                                  body=body,
-                                  recipients=[app.config.get('MAIL_TO', None)])
+                        body = render_template('email/new_post.txt.j2',
+                                               user=user,
+                                               post=post)
 
-                    try:
-                        mail.send(msg)
+                        msg = Message(subject=f"New Post",
+                                      body=body,
+                                      recipients=[app.config.get('MAIL_TO', None)])
 
-                    except Exception as e:
-                        app.logger.error(e)
+                        try:
+                            mail.send(msg)
+
+                        except Exception as e:
+                            app.logger.error(e)
 
                 return redirect(url_for('index'))
 
