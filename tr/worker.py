@@ -12,15 +12,21 @@ from urllib.parse import urlparse
 
 import psutil
 import requests
+from flask import render_template, Flask
+from flask_mail import Message, Mail
+from jinja2 import Environment, FileSystemLoader
 from mastodon import Mastodon, MastodonAPIError, MastodonNetworkError
 from sqlalchemy import create_engine, exc, func
 from sqlalchemy.orm import Session
 
+from app import mail
 from tr.models import Post
 
+app = Flask(__name__)
 start_time = time.time()
-
 config = os.environ.get('TR_CONFIG', 'DevelopmentConfig')
+app.config.from_object('config.' + config)
+
 c = getattr(importlib.import_module('config'), config)
 
 if c.SENTRY_DSN:
@@ -44,6 +50,9 @@ if c.DEBUG:
     l.setLevel(logging.DEBUG)
 else:
     l.setLevel(logging.INFO)
+
+j2_env = Environment(loader=FileSystemLoader('templates'),
+                     trim_blocks=True)
 
 
 def check_worker_stop():
@@ -198,6 +207,22 @@ for post in posts:
                 try:
                     tusk_poster_api.status_reblog(new_message)
                 except MastodonAPIError as e:
+                    l.error(e)
+
+        if c.MAIL_SERVER:
+            with app.app_context() as ctx:
+                mail = Mail(app)
+                template = j2_env.get_template('email/new_post.txt.j2')
+                body = template.render(user=user, post=post)
+                l.debug(body)
+                msg = Message(subject=f"New Post",
+                              body=body,
+                              recipients=[c.MAIL_TO])
+
+                try:
+                    mail.send(msg)
+
+                except Exception as e:
                     l.error(e)
 
     check_worker_stop()

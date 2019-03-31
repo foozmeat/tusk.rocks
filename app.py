@@ -123,22 +123,6 @@ def post():
                 else:
                     flash(f"Thank you! Your post will appear soon.")
 
-                    if app.config.get('MAIL_SERVER', None):
-
-                        body = render_template('email/new_post.txt.j2',
-                                               user=user,
-                                               post=post)
-
-                        msg = Message(subject=f"New Post",
-                                      body=body,
-                                      recipients=[app.config.get('MAIL_TO', None)])
-
-                        try:
-                            mail.send(msg)
-
-                        except Exception as e:
-                            app.logger.error(e)
-
                 return redirect(url_for('index'))
 
         else:
