@@ -193,19 +193,23 @@ for post in posts:
             session.commit()
 
             if c.ACCOUNT_ACCESS_TOKEN:
-                tusk_poster_api = Mastodon(
-                        client_id=c.ACCOUNT_CLIENT_ID,
-                        client_secret=c.ACCOUNT_CLIENT_SECRET,
-                        api_base_url=c.ACCOUNT_BASE_URL,
-                        access_token=c.ACCOUNT_ACCESS_TOKEN,
-                        debug_requests=False,
-                        request_timeout=10
-                )
 
-                try:
-                    tusk_poster_api.status_reblog(new_message)
-                except MastodonAPIError as e:
-                    l.error(e)
+                for tries in range(0, 10):
+                    tusk_poster_api = Mastodon(
+                            client_id=c.ACCOUNT_CLIENT_ID,
+                            client_secret=c.ACCOUNT_CLIENT_SECRET,
+                            api_base_url=c.ACCOUNT_BASE_URL,
+                            access_token=c.ACCOUNT_ACCESS_TOKEN,
+                            debug_requests=False,
+                            request_timeout=10
+                    )
+
+                    try:
+                        tusk_poster_api.status_reblog(new_message)
+                        break
+                    except MastodonAPIError as e:
+                        time.sleep(6)
+                        l.error(e)
 
         if c.MAIL_SERVER:
             with app.app_context() as ctx:
