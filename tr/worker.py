@@ -20,6 +20,7 @@ from sqlalchemy import create_engine, exc, func
 from sqlalchemy.orm import Session
 from tr.models import Post
 
+config = os.environ.get('TR_CONFIG', 'DevelopmentConfig')
 c = getattr(importlib.import_module('config'), config)
 
 if c.SENTRY_DSN:
@@ -29,7 +30,6 @@ if c.SENTRY_DSN:
 
 app = Flask(__name__)
 start_time = time.time()
-config = os.environ.get('TR_CONFIG', 'DevelopmentConfig')
 app.config.from_object('config.' + config)
 
 parser = argparse.ArgumentParser(description='Worker')
