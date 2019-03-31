@@ -18,14 +18,7 @@ from jinja2 import Environment, FileSystemLoader
 from mastodon import Mastodon, MastodonAPIError, MastodonNetworkError
 from sqlalchemy import create_engine, exc, func
 from sqlalchemy.orm import Session
-
-from app import mail
 from tr.models import Post
-
-app = Flask(__name__)
-start_time = time.time()
-config = os.environ.get('TR_CONFIG', 'DevelopmentConfig')
-app.config.from_object('config.' + config)
 
 c = getattr(importlib.import_module('config'), config)
 
@@ -33,6 +26,11 @@ if c.SENTRY_DSN:
     from raven import Client
 
     client = Client(c.SENTRY_DSN)
+
+app = Flask(__name__)
+start_time = time.time()
+config = os.environ.get('TR_CONFIG', 'DevelopmentConfig')
+app.config.from_object('config.' + config)
 
 parser = argparse.ArgumentParser(description='Worker')
 parser.add_argument('--worker', dest='worker', type=int, required=False, default=1)
