@@ -14,7 +14,7 @@ requests = "==2.21.0"
 raven = {version = "*",extras = ["flask"]}
 flask-wtf = "==0.14.2"
 metadata-parser = "==0.9.21"
-lxml = "==4.3.0"
+lxml = "==4.6.2"
 psutil = "==5.6.6"
 pip-check = "*"
 
